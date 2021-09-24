@@ -12,11 +12,6 @@ CREATE TABLE IF NOT EXISTS position (
                                       );
 
 
-
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA stockportfolio TO stockportfolio;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA stockportfolio TO stockportfolio;
-
-
 INSERT INTO position (symbol, stockCount, buyPrice, owner, buyDate, broker) VALUES
                       ('APC', 15, 46.62, 'Sergei', '2018-11-12T15:23:48.388', 'Flatex'),
                       ('MSF', 19, 95.53, 'Sergei', '2018-11-13T15:23:48.388', 'Flatex'),

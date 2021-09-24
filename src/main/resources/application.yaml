@@ -1,8 +1,6 @@
 spring:
   jpa:
     open-in-view: false
-    properties:
-      hibernate.default_schema: stockportfolio
   application:
     name: stockportfolio
   datasource:
@@ -35,4 +33,3 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/liquibase-changelog.xml
-    default-schema: stockportfolio
