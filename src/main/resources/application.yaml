@@ -8,9 +8,9 @@ spring:
       postgres:
         hikari:
           poolName: StockPortfolioPostgresPool
-          jdbcUrl: jdbc:${DATABASE_URL}:5432/${DATABASE_NAME}?currentSchema=stockportfolio
-          username: ${DATABASE_USERNAME}
-          password: ${DATABASE_PASSWORD}
+          jdbcUrl: ${JDBC_DATABASE_URL}?currentSchema=stockportfolio
+          username: ${JDBC_DATABASE_USERNAME}
+          password: ${JDBC_DATABASE_PASSWORD}
           maximumPoolSize: 22
           idleTimeout: 20000
           maxLifetime: 120000
@@ -25,9 +25,9 @@ spring:
       postgres:
         hikari:
           poolName: LiquibasePostgresPool
-          jdbcUrl: jdbc:${DATABASE_URL}:5432/${DATABASE_NAME}
-          username: ${DATABASE_USERNAME}
-          password: ${DATABASE_PASSWORD}
+          jdbcUrl: ${JDBC_DATABASE_URL}
+          username: ${JDBC_DATABASE_USERNAME}
+          password: ${JDBC_DATABASE_PASSWORD}
           maximumPoolSize: 3
   # Settings for liquibase
   liquibase:
