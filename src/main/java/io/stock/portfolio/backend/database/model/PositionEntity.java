@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @Accessors(chain = true)
 @Entity
-@Table(schema = "stockportfolio", name = "position")
+@Table(name = "position")
 public class PositionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
