@@ -1,0 +1,36 @@
+spring:
+  jpa:
+    open-in-view: false
+  application:
+    name: stockportfolio
+  datasource:
+    app: # Datasource for application
+      postgres:
+        hikari:
+          poolName: StockPortfolioPostgresPool
+          jdbcUrl: jdbc:postgresql://localhost:5432/stockportfolio?currentSchema=stockportfolio
+          username: stockportfolio
+          password: stockportfolio
+          maximumPoolSize: 22
+          idleTimeout: 20000
+          maxLifetime: 120000
+          minimumIdle: 3
+          connectionTimeout: 30000
+        jpa:
+          hibernate:
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+            ddl_auto: validate
+            show_sql: true
+    liquibase: # Datasource for liquibase
+      postgres:
+        hikari:
+          poolName: LiquibasePostgresPool
+          jdbcUrl: jdbc:postgresql://localhost:5432/stockportfolio
+          username: stockportfolio
+          password: stockportfolio
+          maximumPoolSize: 3
+  # Settings for liquibase
+  liquibase:
+    enabled: true
+    change-log: classpath:db/liquibase-changelog.xml
+    default-schema: stockportfolio

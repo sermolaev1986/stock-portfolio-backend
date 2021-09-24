@@ -1,0 +1,1 @@
+psql stockportfolio < /usr/share/container-scripts/postgresql/start/database.sql

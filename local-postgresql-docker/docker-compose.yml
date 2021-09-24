@@ -1,0 +1,13 @@
+version: '2'
+services:
+  database:
+    build: .
+    container_name: stock-portfolio-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRESQL_USER: stockportfolio
+      POSTGRESQL_PASSWORD: stockportfolio
+      POSTGRESQL_DATABASE: stockportfolio
+
+
