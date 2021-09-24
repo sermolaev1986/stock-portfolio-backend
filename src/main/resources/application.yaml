@@ -1,6 +1,8 @@
 spring:
   jpa:
     open-in-view: false
+    properties:
+      hibernate.default_schema: stockportfolio
   application:
     name: stockportfolio
   datasource:
@@ -8,7 +10,7 @@ spring:
       postgres:
         hikari:
           poolName: StockPortfolioPostgresPool
-          jdbcUrl: ${JDBC_DATABASE_URL}?currentSchema=stockportfolio
+          jdbcUrl: ${JDBC_DATABASE_URL}
           username: ${JDBC_DATABASE_USERNAME}
           password: ${JDBC_DATABASE_PASSWORD}
           maximumPoolSize: 22
