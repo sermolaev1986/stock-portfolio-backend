@@ -28,7 +28,6 @@ public class PositionService {
         return positionRepository.findByOwner(owner)
                 .stream()
                 .map(this::convertToResponse)
-                .map(this::enrichWithDividends)
                 .collect(Collectors.toList());
     }
 
@@ -45,15 +44,10 @@ public class PositionService {
                 .setBuyPrice(entity.getBuyPrice())
                 .setStockCount(entity.getStockCount())
                 .setBuyDate(entity.getBuyDate())
-                .setBroker(entity.getBroker());
+                .setBroker(entity.getBroker())
+                .setDividends(dividendService.getTotalEuroNettoBySymbol(entity.getSymbol(), entity.getStockCount()));
     }
 
-    private PositionDTO enrichWithDividends(PositionDTO positionDTO) {
-        Map<String, Float> totalEuroNettoToSymbol = dividendService.getTotalEuroNettoToSymbol();
-
-       return positionDTO
-                .setDividends(totalEuroNettoToSymbol.get(positionDTO.getSymbol()));
-    }
 
     private PositionEntity convertToEntity(PositionDTO positionDTO) {
         return new PositionEntity()

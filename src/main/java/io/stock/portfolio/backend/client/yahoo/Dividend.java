@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class Dividend {
     private float amount;
+    private long date;
 }

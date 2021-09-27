@@ -10,9 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -52,15 +50,15 @@ public class DividendService {
                 .collect(Collectors.toList());
     }
 
-    public Map<String, Float> getTotalEuroNettoToSymbol() {
-        Map<String, Float> positionToDividends = dividendRepository.findAll()
+    public  Float getTotalEuroNettoBySymbol(String symbol, Integer  stockCount) {
+        // TODO: add from to
+        Float sumOfDividendsPerShare = dividendRepository.findBySymbol(symbol)
                 .stream()
-                .collect(Collectors.toMap(
-                        DividendEntity::getSymbol, DividendEntity::getEuroBruttoAmount, Float::sum));
+                .map(DividendEntity::getEuroBruttoAmount)
+                .reduce(Float::sum)
+                .orElse(0.0f);
 
-        positionToDividends.entrySet()
-                .forEach(entry -> entry.setValue(calculateAustrianTax(entry.getValue())));
-        return positionToDividends;
+        return calculateAustrianTax(sumOfDividendsPerShare * stockCount);
     }
 
     private DividendResponse convertToResponse(DividendEntity dividendEntity) {
@@ -70,6 +68,7 @@ public class DividendService {
                 .setEuroBruttoAmount(dividendEntity.getEuroBruttoAmount())
                 .setSymbol(dividendEntity.getSymbol())
                 .setExDate(dividendEntity.getExDate())
+                .setPaymentDate(dividendEntity.getExDate())
                 .setDollarNettoAmount(calculateUSATax(dividendEntity.getDollarBruttoAmount()))
                 .setEuroNettoAmount(calculateAustrianTax(dividendEntity.getEuroBruttoAmount()));
     }
