@@ -25,7 +25,7 @@ spring:
       postgres:
         hikari:
           poolName: LiquibasePostgresPool
-          jdbcUrl: ${JDBC_DATABASE_URL} #jdbc:postgresql://localhost:5432/stockportfolio
+          jdbcUrl:  ${JDBC_DATABASE_URL} #jdbc:postgresql://localhost:5432/stockportfolio
           username: ${JDBC_DATABASE_USERNAME} #stockportfolio
           password: ${JDBC_DATABASE_PASSWORD} #stockportfolio
           maximumPoolSize: 1

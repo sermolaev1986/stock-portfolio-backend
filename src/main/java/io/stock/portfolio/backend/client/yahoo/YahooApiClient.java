@@ -66,7 +66,7 @@ public class YahooApiClient {
                     YahooDividend yahooDividend = new YahooDividend();
                     yahooDividend.setAmount(value.getAmount());
 
-                    Instant instant = Instant.ofEpochMilli(value.getDate());
+                    Instant instant = Instant.ofEpochSecond(value.getDate());
                     LocalDateTime exDate = LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
                     yahooDividend.setExDate(exDate);
 
