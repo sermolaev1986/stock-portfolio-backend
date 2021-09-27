@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 public class PositionService {
 
     private final PositionRepository positionRepository;
+    private final DividendService dividendService;
 
     public List<PositionDTO> getAllPositions() {
         return positionRepository.findAll()
@@ -26,6 +28,7 @@ public class PositionService {
         return positionRepository.findByOwner(owner)
                 .stream()
                 .map(this::convertToResponse)
+                .map(this::enrichWithDividends)
                 .collect(Collectors.toList());
     }
 
@@ -35,6 +38,7 @@ public class PositionService {
 
 
     private PositionDTO convertToResponse(PositionEntity entity) {
+
         return new PositionDTO()
                 .setOwner(entity.getOwner())
                 .setSymbol(entity.getSymbol())
@@ -42,6 +46,13 @@ public class PositionService {
                 .setStockCount(entity.getStockCount())
                 .setBuyDate(entity.getBuyDate())
                 .setBroker(entity.getBroker());
+    }
+
+    private PositionDTO enrichWithDividends(PositionDTO positionDTO) {
+        Map<String, Float> totalEuroNettoToSymbol = dividendService.getTotalEuroNettoToSymbol();
+
+       return positionDTO
+                .setDividends(totalEuroNettoToSymbol.get(positionDTO.getSymbol()));
     }
 
     private PositionEntity convertToEntity(PositionDTO positionDTO) {

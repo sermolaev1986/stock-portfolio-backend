@@ -1,4 +1,7 @@
-CREATE SCHEMA if not exists stockportfolio AUTHORIZATION stockportfolio;
-SET search_path TO stockportfolio;
+
+DROP TABLE IF EXISTS position;
+DROP TABLE IF EXISTS dividend;
+DROP TABLE IF EXISTS databasechangelog;
+DROP TABLE IF EXISTS databasechangeloglock;
 
 

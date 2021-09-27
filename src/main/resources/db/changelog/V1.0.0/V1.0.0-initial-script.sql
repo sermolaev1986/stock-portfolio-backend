@@ -3,13 +3,19 @@
 
 CREATE TABLE IF NOT EXISTS position (
                                       id BIGSERIAL UNIQUE PRIMARY KEY,
-                                      symbol VARCHAR(12) NOT NULL,
+                                      symbol VARCHAR(8) NOT NULL,
                                       stockCount INTEGER NOT NULL,
                                       buyPrice FLOAT(8) NOT NULL,
-                                      owner VARCHAR(12) NOT NULL,
+                                      owner VARCHAR(8) NOT NULL,
                                       buyDate TIMESTAMP NOT NULL,
-                                      broker VARCHAR(12) NOT NULL
+                                      broker VARCHAR(8) NOT NULL
                                       );
+
+CREATE TABLE IF NOT EXISTS dividend (   id BIGSERIAL UNIQUE PRIMARY KEY,
+                                        symbol VARCHAR(8) NOT NULL,
+                                        dollarBruttoAmount FLOAT(8) NOT NULL,
+                                        euroBruttoAmount FLOAT(8) NOT NULL,
+                                        exDate TIMESTAMP NOT NULL);
 
 
 INSERT INTO position (symbol, stockCount, buyPrice, owner, buyDate, broker) VALUES

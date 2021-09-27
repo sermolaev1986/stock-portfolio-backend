@@ -8,4 +8,5 @@ import java.util.Set;
 public interface PositionRepository extends JpaRepository<PositionEntity, Long> {
 
     Set<PositionEntity> findByOwner(String owner);
+    Set<PositionEntity> findBySymbolAndOwner(String symbol, String owner);
 }

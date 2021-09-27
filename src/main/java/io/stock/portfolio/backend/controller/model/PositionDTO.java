@@ -28,4 +28,5 @@ public class PositionDTO {
     private LocalDateTime buyDate;
     @NotBlank
     private String broker;
+    private Float dividends;
 }
