@@ -58,7 +58,9 @@ public class YahooApiClient {
         return response.getChart().getResult()
                 .stream()
                 .map(Result::getEvents)
+                .filter(Objects::nonNull)
                 .map(Events::getDividends)
+                .filter(Objects::nonNull)
                 .flatMap(div -> div.entrySet().stream())
                 .map(div -> {
                     Dividend value = div.getValue();
