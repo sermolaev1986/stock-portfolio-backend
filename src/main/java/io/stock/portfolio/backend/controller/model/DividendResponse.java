@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DividendResponse {
     private String symbol;
-    private Float amountPerShare;
     private Float dollarBruttoAmount;
     private Float dollarNettoAmount;
     private Float euroBruttoAmount;
     private Float euroNettoAmount;
     private LocalDateTime paymentDate;
     private LocalDateTime exDate;
+    private Integer shareAmount;
 }

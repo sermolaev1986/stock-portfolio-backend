@@ -1,0 +1,4 @@
+###
+GET http://localhost:8080/v1/dividends?symbol=RTS2&owner=Olga
+
+###

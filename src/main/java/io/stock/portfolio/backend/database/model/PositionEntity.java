@@ -22,9 +22,6 @@ public class PositionEntity {
     @Column(name = "stockCount")
     private Integer stockCount;
 
-    @Column(name = "buyPrice")
-    private Float buyPrice;
-
     @Column(name = "owner")
     private String owner;
 

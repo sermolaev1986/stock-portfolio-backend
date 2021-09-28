@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface DividendRepository extends JpaRepository<DividendEntity, Long> {
 
-    List<DividendEntity> findBySymbol(String symbol);
+    List<DividendEntity> findBySymbolAndOwner(String symbol, String owner);
 }

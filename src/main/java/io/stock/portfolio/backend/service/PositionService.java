@@ -1,13 +1,12 @@
 package io.stock.portfolio.backend.service;
 
-import io.stock.portfolio.backend.controller.model.PositionDTO;
+import io.stock.portfolio.backend.controller.model.PositionResponse;
 import io.stock.portfolio.backend.database.model.PositionEntity;
 import io.stock.portfolio.backend.database.repository.PositionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,45 +16,47 @@ public class PositionService {
     private final PositionRepository positionRepository;
     private final DividendService dividendService;
 
-    public List<PositionDTO> getAllPositions() {
+    public List<PositionResponse> getAllPositions() {
         return positionRepository.findAll()
                 .stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
 
-    public List<PositionDTO> getAllPositionsByOwner(String owner) {
+    public List<PositionResponse> getAllPositionsByOwner(String owner) {
         return positionRepository.findByOwner(owner)
                 .stream()
                 .map(this::convertToResponse)
+                .map(this::enrichWithDividends)
                 .collect(Collectors.toList());
     }
 
-    public void postPosition(PositionDTO positionDTO) {
-        positionRepository.save(convertToEntity(positionDTO));
+    public void postPosition(PositionResponse positionResponse) {
+        positionRepository.save(convertToEntity(positionResponse));
     }
 
 
-    private PositionDTO convertToResponse(PositionEntity entity) {
+    private PositionResponse convertToResponse(PositionEntity entity) {
 
-        return new PositionDTO()
+        return new PositionResponse()
                 .setOwner(entity.getOwner())
                 .setSymbol(entity.getSymbol())
-                .setBuyPrice(entity.getBuyPrice())
                 .setStockCount(entity.getStockCount())
                 .setBuyDate(entity.getBuyDate())
-                .setBroker(entity.getBroker())
-                .setDividends(dividendService.getTotalEuroNettoBySymbol(entity.getSymbol(), entity.getStockCount()));
+                .setBroker(entity.getBroker());
     }
 
+    private PositionResponse enrichWithDividends(PositionResponse positionResponse) {
+        return positionResponse
+                .setDividends(dividendService.getTotalDividendsEuroNetto(positionResponse.getSymbol(), positionResponse.getOwner()));
+    }
 
-    private PositionEntity convertToEntity(PositionDTO positionDTO) {
+    private PositionEntity convertToEntity(PositionResponse positionResponse) {
         return new PositionEntity()
-                .setOwner(positionDTO.getOwner())
-                .setSymbol(positionDTO.getSymbol())
-                .setBuyPrice(positionDTO.getBuyPrice())
-                .setStockCount(positionDTO.getStockCount())
-                .setBuyDate(positionDTO.getBuyDate())
-                .setBroker(positionDTO.getBroker());
+                .setOwner(positionResponse.getOwner())
+                .setSymbol(positionResponse.getSymbol())
+                .setStockCount(positionResponse.getStockCount())
+                .setBuyDate(positionResponse.getBuyDate())
+                .setBroker(positionResponse.getBroker());
     }
 }
