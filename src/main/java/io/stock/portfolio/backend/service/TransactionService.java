@@ -68,6 +68,7 @@ public class TransactionService {
                 .setSymbol(dto.getSymbol())
                 .setDate(dto.getDate())
                 .setArgument(dto.getArgument())
+                .setOwner(dto.getOwner())
                 .setOperator(dto.getOperator());
     }
 }
