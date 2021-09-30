@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Data
 @Accessors(chain = true)
@@ -31,4 +32,16 @@ public class PositionEntity {
     @Column(name = "broker")
     private String broker;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PositionEntity)) return false;
+        PositionEntity position = (PositionEntity) o;
+        return Objects.equals(id, position.id) && symbol.equals(position.symbol) && owner.equals(position.owner) && buyDate.equals(position.buyDate) && broker.equals(position.broker);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, symbol, owner, buyDate, broker);
+    }
 }

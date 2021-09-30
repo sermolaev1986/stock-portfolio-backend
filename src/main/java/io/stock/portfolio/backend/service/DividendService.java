@@ -42,7 +42,7 @@ public class DividendService {
 
         if (!dividendsSortedByPaymentDate.isEmpty()) {
             LocalDateTime lastDividend = dividendsSortedByPaymentDate.get(0).getExDate();
-            if (lastDividend.plusMonths(1).isAfter(LocalDateTime.now())) {
+            if (lastDividend.plusMonths(1).isBefore(LocalDateTime.now())) {
                 dividendsSortedByPaymentDate.addAll(retrieveAndSaveDividends(symbol, owner, lastDividend));
             }
         } else {

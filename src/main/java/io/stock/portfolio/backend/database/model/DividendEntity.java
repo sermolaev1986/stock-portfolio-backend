@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Data
 @Accessors(chain = true)
@@ -27,4 +28,17 @@ public class DividendEntity {
     private Integer shareAmount;
     @Column(name = "owner")
     private String owner;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DividendEntity)) return false;
+        DividendEntity that = (DividendEntity) o;
+        return Objects.equals(id, that.id) && symbol.equals(that.symbol) && exDate.equals(that.exDate) && owner.equals(that.owner);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, symbol, exDate, owner);
+    }
 }
