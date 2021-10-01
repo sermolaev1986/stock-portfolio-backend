@@ -61,7 +61,7 @@ public class DividendService {
     public Float getTotalDividendsEuroNetto(String symbol, String owner) {
         return getDividendsBySymbolAndOwner(symbol, owner)
                 .stream()
-                .map(DividendResponse::getEuroBruttoAmount)
+                .map(DividendResponse::getEuroNettoAmount)
                 .reduce(Float::sum)
                 .orElse(0.0f);
     }
@@ -78,7 +78,7 @@ public class DividendService {
                 .setExDate(dividendEntity.getExDate())
                 .setPaymentDate(dividendEntity.getExDate())
                 .setShareAmount(dividendEntity.getShareAmount())
-                .setAmountPerShare(euroNettoAmount/dividendEntity.getShareAmount())
+                .setAmountPerShare(dollarBruttoAmount/dividendEntity.getShareAmount())
                 .setDollarBruttoAmount(dollarBruttoAmount)
                 .setEuroBruttoAmount(euroBruttoAmount)
                 .setDollarNettoAmount(dollarNettoAmount)
