@@ -18,8 +18,8 @@ public class DividendEntity {
     private Long id;
     @Column(name = "symbol")
     private String symbol;
-    @Column(name = "dollarBruttoAmount")
-    private Float dollarBruttoAmount;
+    @Column(name = "amountPerShare")
+    private Float amountPerShare;
     @Column(name = "exchangeRate")
     private Float exchangeRate; // How much does 1 EUR cost
     @Column(name = "exDate")

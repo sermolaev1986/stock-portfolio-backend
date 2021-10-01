@@ -68,7 +68,7 @@ public class DividendService {
 
     private DividendResponse convertToResponse(DividendEntity dividendEntity) {
 
-        Float dollarBruttoAmount = dividendEntity.getDollarBruttoAmount();
+        Float dollarBruttoAmount = dividendEntity.getAmountPerShare() * dividendEntity.getShareAmount();
         Float dollarNettoAmount = calculateAfterUSATax(dollarBruttoAmount);
         float euroBruttoAmount = dollarNettoAmount / dividendEntity.getExchangeRate();
         Float euroNettoAmount = calculateAfterAustrianTax(euroBruttoAmount);
@@ -136,7 +136,7 @@ public class DividendService {
                                     .setOwner(owner)
                                     .setExDate(div.getExDate())
                                     .setShareAmount(period.getAmountOfShares())
-                                    .setDollarBruttoAmount(div.getAmount() * period.amountOfShares)
+                                    .setAmountPerShare(div.getAmount())
                                     .setExchangeRate(exchangeRateClient.getByDate(div.getExDate()));
                         }))
                 .collect(toList());
