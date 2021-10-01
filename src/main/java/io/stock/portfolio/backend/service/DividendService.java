@@ -5,6 +5,7 @@ import io.stock.portfolio.backend.client.yahoo.YahooApiClient;
 import io.stock.portfolio.backend.client.yahoo.YahooDividend;
 import io.stock.portfolio.backend.controller.model.DividendResponse;
 import io.stock.portfolio.backend.database.model.DividendEntity;
+import io.stock.portfolio.backend.database.model.Operator;
 import io.stock.portfolio.backend.database.model.PositionEntity;
 import io.stock.portfolio.backend.database.model.TransactionEntity;
 import io.stock.portfolio.backend.database.repository.DividendRepository;
@@ -15,9 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -34,8 +33,10 @@ public class DividendService {
     private final ExchangeRateClient exchangeRateClient;
 
     public List<DividendResponse> getDividendsBySymbolAndOwner(String symbol, String owner) {
-        List<DividendEntity> dividends = dividendRepository.findBySymbolAndOwner(symbol, owner);
+        return getDividendsBySymbolAndOwner(symbol, owner, dividendRepository.findBySymbolAndOwner(symbol, owner));
+    }
 
+    public List<DividendResponse> getDividendsBySymbolAndOwner(String symbol, String owner, List<DividendEntity> dividends) {
         List<DividendEntity> dividendsSortedByPaymentDate = dividends
                 .stream()
                 .sorted(Comparator.comparing(DividendEntity::getExDate).reversed())
@@ -44,7 +45,7 @@ public class DividendService {
         if (!dividendsSortedByPaymentDate.isEmpty()) {
             LocalDateTime lastDividend = dividendsSortedByPaymentDate.get(0).getExDate();
             if (lastDividend.plusMonths(1).isBefore(LocalDateTime.now())) {
-                dividendsSortedByPaymentDate.addAll(retrieveAndSaveDividends(symbol, owner, lastDividend));
+                dividendsSortedByPaymentDate.addAll(retrieveAndSaveDividends(symbol, owner, lastDividend.plusDays(1)));
             }
         } else {
             PositionEntity position = positionRepository.findBySymbolAndOwner(symbol, owner)
@@ -58,12 +59,17 @@ public class DividendService {
                 .collect(Collectors.toList());
     }
 
-    public Float getTotalDividendsEuroNetto(String symbol, String owner) {
-        return getDividendsBySymbolAndOwner(symbol, owner)
+    public Float getTotalDividendsEuroNetto(String symbol, String owner, List<DividendEntity> dividends) {
+        return getDividendsBySymbolAndOwner(symbol, owner, dividends)
                 .stream()
                 .map(DividendResponse::getEuroNettoAmount)
                 .reduce(Float::sum)
                 .orElse(0.0f);
+    }
+
+    public Map<String, List<DividendEntity>> getDividendsByOwner(String owner) {
+        return dividendRepository.findByOwner(owner).stream()
+                .collect(Collectors.groupingBy(DividendEntity::getSymbol));
     }
 
     private DividendResponse convertToResponse(DividendEntity dividendEntity) {
@@ -78,7 +84,7 @@ public class DividendService {
                 .setExDate(dividendEntity.getExDate())
                 .setPaymentDate(dividendEntity.getExDate())
                 .setShareAmount(dividendEntity.getShareAmount())
-                .setAmountPerShare(dollarBruttoAmount/dividendEntity.getShareAmount())
+                .setAmountPerShare(dollarBruttoAmount / dividendEntity.getShareAmount())
                 .setDollarBruttoAmount(dollarBruttoAmount)
                 .setEuroBruttoAmount(euroBruttoAmount)
                 .setDollarNettoAmount(dollarNettoAmount)
@@ -96,13 +102,30 @@ public class DividendService {
     }
 
     private List<DividendEntity> retrieveAndSaveDividends(String symbol, String owner, LocalDateTime lastDividendDate) {
-        List<YahooDividend> yahooDividendsSorted = yahooApiClient.detDividends(symbol, lastDividendDate)
+        var maybeResponse = yahooApiClient.getDividendsAndSplits(symbol, lastDividendDate);
+        if (maybeResponse.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        var response = maybeResponse.get();
+        var newSplitTransactions = response.getSplits().stream().map(yahooSplit ->
+                new TransactionEntity()
+                        .setSymbol(symbol)
+                        .setOwner(owner)
+                        .setDate(yahooSplit.getDate())
+                        .setOperator(Operator.MULTIPLY)
+                        //TODO will not work for reverse splits
+                        .setArgument(Math.round(yahooSplit.getMultiplier()))
+        ).collect(Collectors.toSet());
+
+        transactionRepository.saveAll(newSplitTransactions);
+
+        List<YahooDividend> yahooDividendsSorted = maybeResponse.get().getDividends()
                 .stream()
                 .sorted(Comparator.comparing(YahooDividend::getExDate))
                 .collect(toList());
 
         List<TransactionEntity> transactionsSorted = transactionRepository.findBySymbolAndOwnerOrderByDateAsc(symbol, owner);
-
 
         List<PeriodWithAmount> periods = new ArrayList<>();
         int currentAmountOfShares = 0;
@@ -130,15 +153,13 @@ public class DividendService {
                 .flatMap(period -> yahooDividendsSorted
                         .stream()
                         .filter(div -> period.isInPeriod(div.getExDate()))
-                        .map(div -> {
-                            return new DividendEntity()
-                                    .setSymbol(symbol)
-                                    .setOwner(owner)
-                                    .setExDate(div.getExDate())
-                                    .setShareAmount(period.getAmountOfShares())
-                                    .setAmountPerShare(div.getAmount())
-                                    .setExchangeRate(exchangeRateClient.getByDate(div.getExDate()));
-                        }))
+                        .map(div -> new DividendEntity()
+                                .setSymbol(symbol)
+                                .setOwner(owner)
+                                .setExDate(div.getExDate())
+                                .setShareAmount(period.getAmountOfShares())
+                                .setAmountPerShare(div.getAmount())
+                                .setExchangeRate(exchangeRateClient.getByDate(div.getExDate()))))
                 .collect(toList());
 
         List<DividendEntity> severStal = dividendEntities.stream()

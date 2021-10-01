@@ -14,9 +14,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -26,7 +27,7 @@ public class YahooApiClient {
 
     private final RestTemplate restTemplate;
 
-    public List<YahooDividend> detDividends(String symbol, LocalDateTime lastDividendDate) {
+    public Optional<YahooDividendsAndSplits> getDividendsAndSplits(String symbol, LocalDateTime lastDividendDate) {
         long from = lastDividendDate.atZone(ZoneId.systemDefault()).toEpochSecond();
         long to = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
         String yahooUrl = String.format("https://query1.finance.yahoo.com/v8/finance/chart/%s.F", symbol);
@@ -47,33 +48,63 @@ public class YahooApiClient {
                 Response.class);
 
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            return convertToYahooDividend(Objects.requireNonNull(responseEntity.getBody()));
+            return Optional.of(new YahooDividendsAndSplits()
+                    .setDividends(convertToYahooDividend(Objects.requireNonNull(responseEntity.getBody())))
+                    .setSplits(convertToYahooSplit(Objects.requireNonNull(responseEntity.getBody()))));
         }
 
-        return Collections.emptyList();
+        return Optional.empty();
+    }
+
+    private List<YahooSplit> convertToYahooSplit(Response response) {
+        return response.getChart().getResult().stream()
+                .map(Result::getEvents)
+                .filter(Objects::nonNull)
+                .map(Events::getSplits)
+                .filter(Objects::nonNull)
+                .flatMap(div -> div.entrySet().stream())
+                .map(Map.Entry::getValue)
+                .map(split ->
+                        new YahooSplit()
+                                .setDate(LocalDateTime.ofInstant(split.getDate(), ZoneOffset.UTC))
+                                .setMultiplier(split.getMultiplier())
+                )
+                .collect(Collectors.toList());
     }
 
     private List<YahooDividend> convertToYahooDividend(Response response) {
-
-        return response.getChart().getResult()
-                .stream()
+        final List<Result> results = response.getChart().getResult();
+        return results.stream()
                 .map(Result::getEvents)
                 .filter(Objects::nonNull)
                 .map(Events::getDividends)
                 .filter(Objects::nonNull)
                 .flatMap(div -> div.entrySet().stream())
+                .map(Map.Entry::getValue)
                 .map(div -> {
-                    Dividend value = div.getValue();
-
                     YahooDividend yahooDividend = new YahooDividend();
-                    yahooDividend.setAmount(value.getAmount());
 
-                    Instant instant = Instant.ofEpochSecond(value.getDate());
+                    Instant instant = Instant.ofEpochSecond(div.getDate());
                     LocalDateTime exDate = LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
                     yahooDividend.setExDate(exDate);
+
+                    yahooDividend.setAmount(adjustDividendToSplits(results, instant, div.getAmount()));
 
                     return yahooDividend;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private Float adjustDividendToSplits(List<Result> results, Instant exDate, float amount) {
+        return results.stream()
+                .map(Result::getEvents)
+                .filter(Objects::nonNull)
+                .map(Events::getSplits)
+                .filter(Objects::nonNull)
+                .flatMap(div -> div.entrySet().stream())
+                .map(Map.Entry::getValue)
+                .filter(split -> split.getDate().isAfter(exDate))
+                .map(Split::getMultiplier)
+                .reduce(1F, (aFloat, aFloat2) -> aFloat * aFloat2) * amount;
     }
 }

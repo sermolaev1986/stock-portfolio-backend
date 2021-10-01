@@ -1,11 +1,13 @@
 package io.stock.portfolio.backend.service;
 
 import io.stock.portfolio.backend.controller.model.PositionResponse;
+import io.stock.portfolio.backend.database.model.DividendEntity;
 import io.stock.portfolio.backend.database.model.PositionEntity;
 import io.stock.portfolio.backend.database.repository.PositionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,17 +26,18 @@ public class PositionService {
     }
 
     public List<PositionResponse> getAllPositionsByOwner(String owner) {
+        var dividends = dividendService.getDividendsByOwner(owner);
+
         return positionRepository.findByOwner(owner)
                 .stream()
                 .map(this::convertToResponse)
-                .map(this::enrichWithDividends)
+                .map(positionResponse -> enrichWithDividends(positionResponse, dividends.get(positionResponse.getSymbol())))
                 .collect(Collectors.toList());
     }
 
     public void postPosition(PositionResponse positionResponse) {
         positionRepository.save(convertToEntity(positionResponse));
     }
-
 
     private PositionResponse convertToResponse(PositionEntity entity) {
 
@@ -46,9 +49,15 @@ public class PositionService {
                 .setBroker(entity.getBroker());
     }
 
-    private PositionResponse enrichWithDividends(PositionResponse positionResponse) {
-        return positionResponse
-                .setDividends(dividendService.getTotalDividendsEuroNetto(positionResponse.getSymbol(), positionResponse.getOwner()));
+    private PositionResponse enrichWithDividends(PositionResponse positionResponse, List<DividendEntity> dividends) {
+        if (dividends == null) {
+            dividends = Collections.emptyList();
+        }
+        positionResponse.setDividends(dividendService.getTotalDividendsEuroNetto(positionResponse.getSymbol(),
+                positionResponse.getOwner(), dividends));
+
+        return positionResponse;
+
     }
 
     private PositionEntity convertToEntity(PositionResponse positionResponse) {

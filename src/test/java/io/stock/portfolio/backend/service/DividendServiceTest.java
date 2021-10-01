@@ -3,24 +3,18 @@ package io.stock.portfolio.backend.service;
 import io.stock.portfolio.backend.client.exchangerate.ExchangeRateClient;
 import io.stock.portfolio.backend.client.yahoo.YahooApiClient;
 import io.stock.portfolio.backend.client.yahoo.YahooDividend;
+import io.stock.portfolio.backend.client.yahoo.YahooDividendsAndSplits;
 import io.stock.portfolio.backend.controller.model.DividendResponse;
-import io.stock.portfolio.backend.database.model.DividendEntity;
 import io.stock.portfolio.backend.database.model.Operator;
 import io.stock.portfolio.backend.database.model.PositionEntity;
 import io.stock.portfolio.backend.database.model.TransactionEntity;
 import io.stock.portfolio.backend.database.repository.DividendRepository;
 import io.stock.portfolio.backend.database.repository.PositionRepository;
 import io.stock.portfolio.backend.database.repository.TransactionRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,7 +25,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -98,8 +91,8 @@ class DividendServiceTest {
                 .setExDate(LocalDateTime.parse("2020-12-15 06:00:00", formatter))
                 .setAmount(1.2f);
 
-        when(yahooApiClient.detDividends("APP", firstTransactionDate))
-                .thenReturn(List.of(div_15_jan, div_15_jun, div_15_sep, div_15_dec));
+        when(yahooApiClient.getDividendsAndSplits("APP", firstTransactionDate))
+                .thenReturn(Optional.of(new YahooDividendsAndSplits().setDividends(List.of(div_15_jan, div_15_jun, div_15_sep, div_15_dec))));
 
         dividendService = new DividendService(dividendRepository, positionRepository,
                 transactionRepository, yahooApiClient, exchangeRateClient);
