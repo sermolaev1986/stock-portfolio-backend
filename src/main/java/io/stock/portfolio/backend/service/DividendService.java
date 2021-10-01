@@ -107,7 +107,7 @@ public class DividendService {
         List<PeriodWithAmount> periods = new ArrayList<>();
         int currentAmountOfShares = 0;
 
-        if (transactionsSorted.size() > 2) {
+        if (transactionsSorted.size() > 1) {
             for (int i = 0; i < transactionsSorted.size() - 1; i++) {
                 TransactionEntity first = transactionsSorted.get(i);
                 TransactionEntity second = transactionsSorted.get(i + 1);

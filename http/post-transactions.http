@@ -1,0 +1,13 @@
+###
+POST http://localhost:8080/v1/transactions
+Content-Type: application/json
+
+{  "date": "2020-08-28T10:00:00",
+    "symbol": "APC",
+    "owner": "Sergei",
+    "argument": 4,
+    "operator": "MULTIPLY",
+    "broker": "Flatex"
+    }
+
+###
