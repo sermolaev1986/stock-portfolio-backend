@@ -21,4 +21,5 @@ public class DividendResponse {
     private LocalDateTime paymentDate;
     private LocalDateTime exDate;
     private Integer shareAmount;
+    private Float amountPerShare;
 }

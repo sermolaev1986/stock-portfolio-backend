@@ -1,5 +1,6 @@
 package io.stock.portfolio.backend.service;
 
+import io.stock.portfolio.backend.client.exchangerate.ExchangeRateClient;
 import io.stock.portfolio.backend.client.yahoo.YahooApiClient;
 import io.stock.portfolio.backend.client.yahoo.YahooDividend;
 import io.stock.portfolio.backend.controller.model.DividendResponse;
@@ -14,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -31,6 +31,7 @@ public class DividendService {
     private final TransactionRepository transactionRepository;
 
     private final YahooApiClient yahooApiClient;
+    private final ExchangeRateClient exchangeRateClient;
 
     public List<DividendResponse> getDividendsBySymbolAndOwner(String symbol, String owner) {
         List<DividendEntity> dividends = dividendRepository.findBySymbolAndOwner(symbol, owner);
@@ -66,23 +67,30 @@ public class DividendService {
     }
 
     private DividendResponse convertToResponse(DividendEntity dividendEntity) {
+
+        Float dollarBruttoAmount = dividendEntity.getDollarBruttoAmount();
+        Float dollarNettoAmount = calculateAfterUSATax(dollarBruttoAmount);
+        float euroBruttoAmount = dollarNettoAmount / dividendEntity.getExchangeRate();
+        Float euroNettoAmount = calculateAfterAustrianTax(euroBruttoAmount);
+
         return new DividendResponse()
-                .setDollarBruttoAmount(dividendEntity.getDollarBruttoAmount())
-                .setEuroBruttoAmount(dividendEntity.getEuroBruttoAmount())
-                .setShareAmount(dividendEntity.getShareAmount())
                 .setSymbol(dividendEntity.getSymbol())
                 .setExDate(dividendEntity.getExDate())
                 .setPaymentDate(dividendEntity.getExDate())
-                .setDollarNettoAmount(calculateUSATax(dividendEntity.getDollarBruttoAmount()))
-                .setEuroNettoAmount(calculateAustrianTax(dividendEntity.getEuroBruttoAmount()));
+                .setShareAmount(dividendEntity.getShareAmount())
+                .setAmountPerShare(euroNettoAmount/dividendEntity.getShareAmount())
+                .setDollarBruttoAmount(dollarBruttoAmount)
+                .setEuroBruttoAmount(euroBruttoAmount)
+                .setDollarNettoAmount(dollarNettoAmount)
+                .setEuroNettoAmount(euroNettoAmount);
     }
 
-    private Float calculateAustrianTax(Float euroBruttoAmount) {
+    private Float calculateAfterAustrianTax(Float euroBruttoAmount) {
         //12,5% KEST
         return euroBruttoAmount * 0.875f;
     }
 
-    private Float calculateUSATax(Float dollarBruttoAmount) {
+    private Float calculateAfterUSATax(Float dollarBruttoAmount) {
         //15% Quellensteuer
         return dollarBruttoAmount * 0.85f;
     }
@@ -123,18 +131,13 @@ public class DividendService {
                         .stream()
                         .filter(div -> period.isInPeriod(div.getExDate()))
                         .map(div -> {
-                            DividendEntity dividendEntity = new DividendEntity()
+                            return new DividendEntity()
                                     .setSymbol(symbol)
                                     .setOwner(owner)
                                     .setExDate(div.getExDate())
                                     .setShareAmount(period.getAmountOfShares())
                                     .setDollarBruttoAmount(div.getAmount() * period.amountOfShares)
-                                    .setEuroBruttoAmount(0.0f);
-                            Float dollarNetto = calculateUSATax(div.getAmount());
-                            //TODO Call exchangeRateService Float euroBrutto
-                            Float euroBrutto = dollarNetto;
-                            dividendEntity.setEuroBruttoAmount(calculateAustrianTax(euroBrutto));
-                            return dividendEntity;
+                                    .setExchangeRate(exchangeRateClient.getByDate(div.getExDate()));
                         }))
                 .collect(toList());
 

@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS position (
 CREATE TABLE IF NOT EXISTS dividend (   id BIGSERIAL UNIQUE PRIMARY KEY,
                                         symbol VARCHAR(8) NOT NULL,
                                         dollarBruttoAmount FLOAT(8) NOT NULL,
-                                        euroBruttoAmount FLOAT(8) NOT NULL,
+                                        exchangeRate FLOAT(8) NOT NULL,
                                         exDate TIMESTAMP NOT NULL,
                                         shareAmount INTEGER NOT NULL,
                                         owner VARCHAR(6) NOT NULL);

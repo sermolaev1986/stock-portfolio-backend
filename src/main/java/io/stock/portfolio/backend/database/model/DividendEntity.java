@@ -20,8 +20,8 @@ public class DividendEntity {
     private String symbol;
     @Column(name = "dollarBruttoAmount")
     private Float dollarBruttoAmount;
-    @Column(name = "euroBruttoAmount")
-    private Float euroBruttoAmount;
+    @Column(name = "exchangeRate")
+    private Float exchangeRate; // How much does 1 EUR cost
     @Column(name = "exDate")
     private LocalDateTime exDate;
     @Column(name = "shareAmount")
