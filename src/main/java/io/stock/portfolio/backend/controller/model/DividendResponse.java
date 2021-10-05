@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -14,12 +15,12 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DividendResponse {
     private String symbol;
-    private Float dollarBruttoAmount;
-    private Float dollarNettoAmount;
-    private Float euroBruttoAmount;
-    private Float euroNettoAmount;
+    private BigDecimal dollarBruttoAmount;
+    private BigDecimal dollarNettoAmount;
+    private BigDecimal euroBruttoAmount;
+    private BigDecimal euroNettoAmount;
     private LocalDateTime paymentDate;
     private LocalDateTime exDate;
     private Integer shareAmount;
-    private Float amountPerShare;
+    private BigDecimal amountPerShare;
 }

@@ -2,16 +2,18 @@ package io.stock.portfolio.backend.client.yahoo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 
 @Data
 public class Split {
 
     private Instant date;
-    private Integer numerator;
-    private Integer denominator;
+    private BigDecimal numerator;
+    private BigDecimal denominator;
 
-    public Float getMultiplier() {
-        return  1.0F * numerator / denominator;
+    public BigDecimal getMultiplier() {
+        return numerator.divide(denominator, RoundingMode.HALF_DOWN);
     }
 }

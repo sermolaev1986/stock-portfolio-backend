@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -19,9 +20,9 @@ public class DividendEntity {
     @Column(name = "symbol")
     private String symbol;
     @Column(name = "amountPerShare")
-    private Float amountPerShare;
+    private BigDecimal amountPerShare;
     @Column(name = "exchangeRate")
-    private Float exchangeRate; // How much does 1 EUR cost
+    private BigDecimal exchangeRate; // How much does 1 EUR cost
     @Column(name = "exDate")
     private LocalDateTime exDate;
     @Column(name = "shareAmount")

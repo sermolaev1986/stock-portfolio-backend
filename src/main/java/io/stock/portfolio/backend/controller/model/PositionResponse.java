@@ -5,8 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
 
 @Data
 @NoArgsConstructor
@@ -18,5 +18,5 @@ public class PositionResponse {
     private String owner;
     private LocalDateTime buyDate;
     private String broker;
-    private Float dividends;
+    private BigDecimal dividends;
 }

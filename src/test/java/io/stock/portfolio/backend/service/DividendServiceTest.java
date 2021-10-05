@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -80,16 +81,16 @@ class DividendServiceTest {
 
         YahooDividend div_15_jan = new YahooDividend()
                 .setExDate(LocalDateTime.parse("2020-01-15 06:00:00", formatter))
-                .setAmount(1.5f);
+                .setAmount(new BigDecimal("1.5"));
         YahooDividend div_15_jun = new YahooDividend()
                 .setExDate(LocalDateTime.parse("2020-06-15 06:00:00", formatter))
-                .setAmount(2.5f);
+                .setAmount(new BigDecimal("2.5"));
         YahooDividend div_15_sep = new YahooDividend()
                 .setExDate(LocalDateTime.parse("2020-09-15 06:00:00", formatter))
-                .setAmount(1.0f);
+                .setAmount(new BigDecimal("1.0"));
         YahooDividend div_15_dec = new YahooDividend()
                 .setExDate(LocalDateTime.parse("2020-12-15 06:00:00", formatter))
-                .setAmount(1.2f);
+                .setAmount(new BigDecimal("1.2"));
 
         when(yahooApiClient.getDividendsAndSplits("APP", firstTransactionDate))
                 .thenReturn(Optional.of(new YahooDividendsAndSplits().setDividends(List.of(div_15_jan, div_15_jun, div_15_sep, div_15_dec))));

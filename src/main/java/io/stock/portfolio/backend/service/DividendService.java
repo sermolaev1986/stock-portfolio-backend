@@ -15,6 +15,8 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -59,12 +61,12 @@ public class DividendService {
                 .collect(Collectors.toList());
     }
 
-    public Float getTotalDividendsEuroNetto(String symbol, String owner, List<DividendEntity> dividends) {
+    public BigDecimal getTotalDividendsEuroNetto(String symbol, String owner, List<DividendEntity> dividends) {
         return getDividendsBySymbolAndOwner(symbol, owner, dividends)
                 .stream()
                 .map(DividendResponse::getEuroNettoAmount)
-                .reduce(Float::sum)
-                .orElse(0.0f);
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
     }
 
     public Map<String, List<DividendEntity>> getDividendsByOwner(String owner) {
@@ -74,31 +76,31 @@ public class DividendService {
 
     private DividendResponse convertToResponse(DividendEntity dividendEntity) {
 
-        Float dollarBruttoAmount = dividendEntity.getAmountPerShare() * dividendEntity.getShareAmount();
-        Float dollarNettoAmount = calculateAfterUSATax(dollarBruttoAmount);
-        float euroBruttoAmount = dollarNettoAmount / dividendEntity.getExchangeRate();
-        Float euroNettoAmount = calculateAfterAustrianTax(euroBruttoAmount);
+        BigDecimal dollarBruttoAmount = dividendEntity.getAmountPerShare().multiply(new BigDecimal(dividendEntity.getShareAmount()));
+        BigDecimal dollarNettoAmount = calculateAfterUSATax(dollarBruttoAmount);
+        BigDecimal euroBruttoAmount = dollarNettoAmount.divide(dividendEntity.getExchangeRate(), RoundingMode.HALF_DOWN);
+        BigDecimal euroNettoAmount = calculateAfterAustrianTax(euroBruttoAmount);
 
         return new DividendResponse()
                 .setSymbol(dividendEntity.getSymbol())
                 .setExDate(dividendEntity.getExDate())
                 .setPaymentDate(dividendEntity.getExDate())
                 .setShareAmount(dividendEntity.getShareAmount())
-                .setAmountPerShare(dollarBruttoAmount / dividendEntity.getShareAmount())
+                .setAmountPerShare(dollarBruttoAmount.divide(new BigDecimal(dividendEntity.getShareAmount()), RoundingMode.HALF_DOWN))
                 .setDollarBruttoAmount(dollarBruttoAmount)
                 .setEuroBruttoAmount(euroBruttoAmount)
                 .setDollarNettoAmount(dollarNettoAmount)
                 .setEuroNettoAmount(euroNettoAmount);
     }
 
-    private Float calculateAfterAustrianTax(Float euroBruttoAmount) {
+    private BigDecimal calculateAfterAustrianTax(BigDecimal euroBruttoAmount) {
         //12,5% KEST
-        return euroBruttoAmount * 0.875f;
+        return euroBruttoAmount.multiply(new BigDecimal("0.875"));
     }
 
-    private Float calculateAfterUSATax(Float dollarBruttoAmount) {
+    private BigDecimal calculateAfterUSATax(BigDecimal dollarBruttoAmount) {
         //15% Quellensteuer
-        return dollarBruttoAmount * 0.85f;
+        return dollarBruttoAmount.multiply(new BigDecimal("0.85"));
     }
 
     private List<DividendEntity> retrieveAndSaveDividends(String symbol, String owner, LocalDateTime lastDividendDate) {
@@ -115,7 +117,7 @@ public class DividendService {
                         .setDate(yahooSplit.getDate())
                         .setOperator(Operator.MULTIPLY)
                         //TODO will not work for reverse splits
-                        .setArgument(Math.round(yahooSplit.getMultiplier()))
+                        .setArgument(yahooSplit.getMultiplier().intValue())
         ).collect(Collectors.toSet());
 
         transactionRepository.saveAll(newSplitTransactions);

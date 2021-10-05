@@ -2,8 +2,10 @@ package io.stock.portfolio.backend.client.yahoo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class Dividend {
-    private float amount;
+    private BigDecimal amount;
     private long date;
 }

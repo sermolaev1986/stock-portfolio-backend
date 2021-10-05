@@ -7,9 +7,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,7 +32,7 @@ public class YahooApiClient {
     public Optional<YahooDividendsAndSplits> getDividendsAndSplits(String symbol, LocalDateTime lastDividendDate) {
         long from = lastDividendDate.atZone(ZoneId.systemDefault()).toEpochSecond();
         long to = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
-        String yahooUrl = String.format("https://query1.finance.yahoo.com/v8/finance/chart/%s.F", symbol);
+        String yahooUrl = String.format("https://query1.finance.yahoo.com/v8/finance/chart/%s.BE", symbol);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(yahooUrl)
                 .queryParam("symbol", symbol)
@@ -41,16 +43,20 @@ public class YahooApiClient {
                 .queryParam("events", "div,split");
 
 
-        ResponseEntity<Response> responseEntity = restTemplate.exchange(
-                builder.toUriString(),
-                HttpMethod.GET,
-                new HttpEntity<>(new LinkedMultiValueMap<>()),
-                Response.class);
-
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            return Optional.of(new YahooDividendsAndSplits()
-                    .setDividends(convertToYahooDividend(Objects.requireNonNull(responseEntity.getBody())))
-                    .setSplits(convertToYahooSplit(Objects.requireNonNull(responseEntity.getBody()))));
+        try {
+            ResponseEntity<Response> responseEntity = restTemplate.exchange(
+                    builder.toUriString(),
+                    HttpMethod.GET,
+                    new HttpEntity<>(new LinkedMultiValueMap<>()),
+                    Response.class);
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                return Optional.of(new YahooDividendsAndSplits()
+                        .setDividends(convertToYahooDividend(Objects.requireNonNull(responseEntity.getBody())))
+                        .setSplits(convertToYahooSplit(Objects.requireNonNull(responseEntity.getBody()))));
+            }
+        } catch (HttpClientErrorException exception) {
+            log.error("error getting dividends for symbol {}: ", symbol, exception);
+            return Optional.empty();
         }
 
         return Optional.empty();
@@ -95,7 +101,7 @@ public class YahooApiClient {
                 .collect(Collectors.toList());
     }
 
-    private Float adjustDividendToSplits(List<Result> results, Instant exDate, float amount) {
+    private BigDecimal adjustDividendToSplits(List<Result> results, Instant exDate, BigDecimal amount) {
         return results.stream()
                 .map(Result::getEvents)
                 .filter(Objects::nonNull)
@@ -105,6 +111,6 @@ public class YahooApiClient {
                 .map(Map.Entry::getValue)
                 .filter(split -> split.getDate().isAfter(exDate))
                 .map(Split::getMultiplier)
-                .reduce(1F, (aFloat, aFloat2) -> aFloat * aFloat2) * amount;
+                .reduce(BigDecimal.ONE, (aFloat, aFloat2) -> aFloat.multiply(aFloat2)).multiply(amount);
     }
 }

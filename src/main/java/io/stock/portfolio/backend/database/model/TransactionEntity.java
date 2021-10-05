@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -27,7 +28,7 @@ public class TransactionEntity {
     @Column(name = "operator")
     private Operator operator;
     @Column(name = "price")
-    private Float price;
+    private BigDecimal price;
 
 
 }

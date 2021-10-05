@@ -10,6 +10,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class ExchangeRateClient {
     private final RestTemplate restTemplate;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public Float getByDate(LocalDateTime exDate) {
+    public BigDecimal getByDate(LocalDateTime exDate) {
         String formattedDate = dateTimeFormatter.format(exDate);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(BASE_PATH)
@@ -48,10 +49,10 @@ public class ExchangeRateClient {
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
             return convertToRate(Objects.requireNonNull(responseEntity.getBody()));
         }
-        return 0.0f;
+        return BigDecimal.ZERO;
     }
 
-    private Float convertToRate(Response response) {
+    private BigDecimal convertToRate(Response response) {
         return response.getRates().getUSD();
     }
 }
