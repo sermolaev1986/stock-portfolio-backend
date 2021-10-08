@@ -31,4 +31,15 @@ public class TransactionEntity {
     private BigDecimal price;
 
 
+    public BigDecimal getTotalPrice() {
+        if (isSplit()) {
+            return BigDecimal.ZERO;
+        } else {
+            return price.multiply(new BigDecimal(argument));
+        }
+    }
+
+    public boolean isSplit() {
+        return operator == Operator.MULTIPLY;
+    }
 }

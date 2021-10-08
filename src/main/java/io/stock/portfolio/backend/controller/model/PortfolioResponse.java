@@ -6,15 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class PositionResponse {
-    private String symbol;
-    private Integer stockCount;
-    private String owner;
-    private String broker;
-    private BigDecimal dividends;
+public class PortfolioResponse {
+    private List<PositionResponse> positions;
+    private BigDecimal investments;
 }

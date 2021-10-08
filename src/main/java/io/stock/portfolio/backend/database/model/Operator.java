@@ -1,22 +1,39 @@
 package io.stock.portfolio.backend.database.model;
 
+import java.math.BigDecimal;
+
 public enum Operator {
-    PLUS("+"){
+    PLUS("+") {
         @Override
-        public Integer calculate(Integer firstArg, Integer secondArg){
+        public Integer calculateAmountOfShares(Integer firstArg, Integer secondArg) {
             return firstArg + secondArg;
         }
-    },
-    MINUS("-"){
+
         @Override
-        public Integer calculate(Integer firstArg, Integer secondArg){
-            return firstArg - secondArg;
+        public BigDecimal calculateTotalPrice(BigDecimal firstArg, BigDecimal secondArg) {
+            return firstArg.add(secondArg);
         }
     },
-    MULTIPLY("*"){
+    MINUS("-") {
         @Override
-        public Integer calculate(Integer firstArg, Integer secondArg){
+        public Integer calculateAmountOfShares(Integer firstArg, Integer secondArg) {
+            return firstArg - secondArg;
+        }
+
+        @Override
+        public BigDecimal calculateTotalPrice(BigDecimal firstArg, BigDecimal secondArg) {
+            return firstArg.subtract(secondArg);
+        }
+    },
+    MULTIPLY("*") {
+        @Override
+        public Integer calculateAmountOfShares(Integer firstArg, Integer secondArg) {
             return firstArg * secondArg;
+        }
+
+        @Override
+        public BigDecimal calculateTotalPrice(BigDecimal firstArg, BigDecimal secondArg) {
+            return firstArg;
         }
     };
 
@@ -24,7 +41,11 @@ public enum Operator {
     Operator(String action) {
     }
 
-    public Integer calculate(Integer firstArg, Integer secondArg){
+    public Integer calculateAmountOfShares(Integer firstArg, Integer secondArg) {
         return 0;
+    }
+
+    public BigDecimal calculateTotalPrice(BigDecimal firstArg, BigDecimal secondArg) {
+        return BigDecimal.ZERO;
     }
 }

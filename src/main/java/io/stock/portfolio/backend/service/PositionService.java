@@ -1,5 +1,6 @@
 package io.stock.portfolio.backend.service;
 
+import io.stock.portfolio.backend.controller.model.PortfolioResponse;
 import io.stock.portfolio.backend.controller.model.PositionResponse;
 import io.stock.portfolio.backend.database.model.DividendEntity;
 import io.stock.portfolio.backend.database.model.PositionEntity;
@@ -7,8 +8,11 @@ import io.stock.portfolio.backend.database.repository.PositionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,12 +21,25 @@ public class PositionService {
 
     private final PositionRepository positionRepository;
     private final DividendService dividendService;
+    private final TransactionService transactionService;
 
-    public List<PositionResponse> getAllPositions() {
-        return positionRepository.findAll()
+    public Map<String, PortfolioResponse> getPortfolio() {
+        var investmentsPerOwner = transactionService.getInvestmentsPerOwner();
+
+        var positions = positionRepository.findAll()
                 .stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
+                .map(entity -> convertToResponse(entity, investmentsPerOwner))
+                .collect(Collectors.groupingBy(PositionResponse::getOwner));
+
+        var portfolio = new HashMap<String, PortfolioResponse>();
+        for (Map.Entry<String, List<PositionResponse>> entry : positions.entrySet()) {
+            portfolio.put(entry.getKey(), new PortfolioResponse()
+                    .setPositions(entry.getValue())
+                    .setInvestments(investmentsPerOwner.get(entry.getKey()))
+            );
+        }
+
+        return portfolio;
     }
 
     public List<PositionResponse> getAllPositionsByOwner(String owner) {
@@ -40,12 +57,15 @@ public class PositionService {
     }
 
     private PositionResponse convertToResponse(PositionEntity entity) {
+        return convertToResponse(entity, new HashMap<>());
+    }
 
+    private PositionResponse convertToResponse(PositionEntity entity, Map<String, BigDecimal> investmentsPerOwner) {
         return new PositionResponse()
                 .setOwner(entity.getOwner())
                 .setSymbol(entity.getSymbol())
                 .setStockCount(entity.getStockCount())
-                .setBuyDate(entity.getBuyDate())
+
                 .setBroker(entity.getBroker());
     }
 
@@ -65,7 +85,6 @@ public class PositionService {
                 .setOwner(positionResponse.getOwner())
                 .setSymbol(positionResponse.getSymbol())
                 .setStockCount(positionResponse.getStockCount())
-                .setBuyDate(positionResponse.getBuyDate())
                 .setBroker(positionResponse.getBroker());
     }
 }

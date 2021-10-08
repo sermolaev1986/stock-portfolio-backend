@@ -136,13 +136,13 @@ public class DividendService {
             for (int i = 0; i < transactionsSorted.size() - 1; i++) {
                 TransactionEntity first = transactionsSorted.get(i);
                 TransactionEntity second = transactionsSorted.get(i + 1);
-                currentAmountOfShares = first.getOperator().calculate(currentAmountOfShares, first.getArgument());
+                currentAmountOfShares = first.getOperator().calculateAmountOfShares(currentAmountOfShares, first.getArgument());
                 periods.add(new PeriodWithAmount(first.getDate(), second.getDate(), currentAmountOfShares));
             }
         }
         // Add the last period or the only one if no changes after buy were added
         TransactionEntity theOnlyOrTheLast = transactionsSorted.get(transactionsSorted.size() - 1);
-        currentAmountOfShares = theOnlyOrTheLast.getOperator().calculate(currentAmountOfShares, theOnlyOrTheLast.getArgument());
+        currentAmountOfShares = theOnlyOrTheLast.getOperator().calculateAmountOfShares(currentAmountOfShares, theOnlyOrTheLast.getArgument());
         periods.add(new PeriodWithAmount(theOnlyOrTheLast.getDate(), LocalDateTime.now(), currentAmountOfShares));
 
         List<PeriodWithAmount> newPeriods = periods

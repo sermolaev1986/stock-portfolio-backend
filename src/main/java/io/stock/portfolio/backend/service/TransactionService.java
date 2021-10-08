@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +19,42 @@ public class TransactionService {
 
     private final PositionRepository positionRepository;
     private final TransactionRepository transactionRepository;
+
+    public Map<String, BigDecimal> getInvestmentsPerOwner() {
+        final Map<String, List<TransactionEntity>> transactionsByOwner = transactionRepository.findAll().stream()
+                .collect(Collectors.groupingBy(TransactionEntity::getOwner));
+        var map = new HashMap<String, BigDecimal>();
+        for (Map.Entry<String, List<TransactionEntity>> entry : transactionsByOwner.entrySet()) {
+            map.put(entry.getKey(), countTransactions(entry.getValue()));
+        }
+
+        return map;
+
+    }
+
+    private BigDecimal countTransactions(List<TransactionEntity> transactions) {
+        final Map<String, List<TransactionEntity>> transactionsBySymbol = transactions.stream()
+                .collect(Collectors.groupingBy(TransactionEntity::getSymbol));
+
+        var totalPrice = BigDecimal.ZERO;
+
+        for (Map.Entry<String, List<TransactionEntity>> entry : transactionsBySymbol.entrySet()) {
+            var transactionEntityList = entry.getValue();
+            transactionEntityList.sort(Comparator.comparing(TransactionEntity::getDate));
+
+            BigDecimal pricePerPosition = BigDecimal.ZERO;
+
+            for (TransactionEntity transactionEntity : transactionEntityList) {
+                if (!transactionEntity.isSplit()) {
+                    pricePerPosition = transactionEntity.getOperator().calculateTotalPrice(pricePerPosition, transactionEntity.getTotalPrice());
+                }
+            }
+
+            totalPrice = totalPrice.add(pricePerPosition);
+        }
+
+        return totalPrice;
+    }
 
     public List<TransactionDTO> getTransactionsByOwner(String owner) {
         return transactionRepository.findByOwnerOrderByDateAsc(owner)
@@ -37,10 +73,10 @@ public class TransactionService {
             PositionEntity position = maybePosition.get();
             Integer stockCountBefore = position.getStockCount();
 
-            Integer stockCountAfter = transactionEntity.getOperator().calculate(stockCountBefore, transactionEntity.getArgument());
+            Integer stockCountAfter = transactionEntity.getOperator().calculateAmountOfShares(stockCountBefore, transactionEntity.getArgument());
             position.setStockCount(stockCountAfter); // Should be updated TODO Check
         } else {
-            Integer stockCount = transactionEntity.getOperator().calculate(0, transactionEntity.getArgument());
+            Integer stockCount = transactionEntity.getOperator().calculateAmountOfShares(0, transactionEntity.getArgument());
 
             PositionEntity position = new PositionEntity()
                     .setOwner(transactionDTO.getOwner())
