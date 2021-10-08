@@ -24,13 +24,12 @@ public class PositionService {
     private final TransactionService transactionService;
 
     public Map<String, PortfolioResponse> getPortfolio() {
-        var investmentsPerOwner = transactionService.getInvestmentsPerOwner();
-
         var positions = positionRepository.findAll()
                 .stream()
-                .map(entity -> convertToResponse(entity, investmentsPerOwner))
+                .map(this::convertToResponse)
                 .collect(Collectors.groupingBy(PositionResponse::getOwner));
 
+        var investmentsPerOwner = transactionService.getInvestmentsPerOwner();
         var portfolio = new HashMap<String, PortfolioResponse>();
         for (Map.Entry<String, List<PositionResponse>> entry : positions.entrySet()) {
             portfolio.put(entry.getKey(), new PortfolioResponse()
@@ -44,10 +43,11 @@ public class PositionService {
 
     public List<PositionResponse> getAllPositionsByOwner(String owner) {
         var dividends = dividendService.getDividendsByOwner(owner);
+        var investments = transactionService.getInvestmentsPerSymbol(owner);
 
         return positionRepository.findByOwner(owner)
                 .stream()
-                .map(this::convertToResponse)
+                .map(entity -> convertToResponse(entity, investments.get(entity.getSymbol())))
                 .map(positionResponse -> enrichWithDividends(positionResponse, dividends.get(positionResponse.getSymbol())))
                 .collect(Collectors.toList());
     }
@@ -56,16 +56,17 @@ public class PositionService {
         positionRepository.save(convertToEntity(positionResponse));
     }
 
-    private PositionResponse convertToResponse(PositionEntity entity) {
-        return convertToResponse(entity, new HashMap<>());
+    private PositionResponse convertToResponse(PositionEntity entity, BigDecimal investments) {
+        return convertToResponse(entity)
+                .setInvestments(investments);
     }
 
-    private PositionResponse convertToResponse(PositionEntity entity, Map<String, BigDecimal> investmentsPerOwner) {
+    private PositionResponse convertToResponse(PositionEntity entity) {
         return new PositionResponse()
                 .setOwner(entity.getOwner())
                 .setSymbol(entity.getSymbol())
                 .setStockCount(entity.getStockCount())
-
+                .setBuyDate(entity.getBuyDate())
                 .setBroker(entity.getBroker());
     }
 

@@ -148,6 +148,7 @@ public class DividendService {
         List<PeriodWithAmount> newPeriods = periods
                 .stream()
                 .filter(per -> per.lastsAfter(lastDividendDate))
+                .filter(per -> per.getAmountOfShares() != 0)
                 .collect(toList());
 
         List<DividendEntity> dividendEntities = newPeriods

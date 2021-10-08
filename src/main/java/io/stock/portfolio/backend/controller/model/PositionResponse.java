@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -16,5 +17,7 @@ public class PositionResponse {
     private Integer stockCount;
     private String owner;
     private String broker;
+    private LocalDateTime buyDate;
+    private BigDecimal investments;
     private BigDecimal dividends;
 }

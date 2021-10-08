@@ -29,7 +29,25 @@ public class TransactionService {
         }
 
         return map;
+    }
 
+    public Map<String, BigDecimal> getInvestmentsPerSymbol(String owner) {
+        final Map<String, List<TransactionEntity>> transactionsByOwner = transactionRepository.findByOwnerOrderByDateAsc(owner).stream()
+                .collect(Collectors.groupingBy(TransactionEntity::getSymbol));
+        var map = new HashMap<String, BigDecimal>();
+
+        for (Map.Entry<String, List<TransactionEntity>> entry : transactionsByOwner.entrySet()) {
+            BigDecimal pricePerPosition = BigDecimal.ZERO;
+
+            for (TransactionEntity transactionEntity : entry.getValue()) {
+                if (!transactionEntity.isSplit()) {
+                    pricePerPosition = transactionEntity.getOperator().calculateTotalPrice(pricePerPosition, transactionEntity.getTotalPrice());
+                }
+            }
+            map.put(entry.getKey(), pricePerPosition);
+        }
+
+        return map;
     }
 
     private BigDecimal countTransactions(List<TransactionEntity> transactions) {
