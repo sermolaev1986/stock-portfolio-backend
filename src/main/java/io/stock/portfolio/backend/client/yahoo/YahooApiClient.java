@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -16,11 +17,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -29,10 +28,42 @@ public class YahooApiClient {
 
     private final RestTemplate restTemplate;
 
+    public Optional<YahooQuote> getQuote(String symbol) {
+        if (!symbol.contains(".")) {
+            symbol = symbol + ".BE";
+        }
+
+        String yahooUrl = String.format("https://query1.finance.yahoo.com/v8/finance/chart/%s", symbol);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(yahooUrl);
+
+        try {
+            ResponseEntity<Response> responseEntity = restTemplate.exchange(
+                    builder.toUriString(),
+                    HttpMethod.GET,
+                    new HttpEntity<>(new LinkedMultiValueMap<>()),
+                    Response.class);
+            return Optional.of(new YahooQuote().setPrice(Optional.ofNullable(responseEntity.getBody())
+                    .map(Response::getChart)
+                    .map(Chart::getResult)
+                    .map(Collection::stream)
+                    .flatMap(Stream::findAny)
+                    .map(Result::getMeta)
+                    .map(Meta::getRegularMarketPrice)
+                    .orElse(BigDecimal.ZERO)));
+        } catch (RestClientException e) {
+            log.error("error getting quote for symbol {}: ", symbol, e);
+        }
+        return Optional.empty();
+    }
+
     public Optional<YahooDividendsAndSplits> getDividendsAndSplits(String symbol, LocalDateTime lastDividendDate) {
+        if (!symbol.contains(".")) {
+            symbol = symbol + ".BE";
+        }
+
         long from = lastDividendDate.atZone(ZoneId.systemDefault()).toEpochSecond();
         long to = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
-        String yahooUrl = String.format("https://query1.finance.yahoo.com/v8/finance/chart/%s.BE", symbol);
+        String yahooUrl = String.format("https://query1.finance.yahoo.com/v8/finance/chart/%s", symbol);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(yahooUrl)
                 .queryParam("symbol", symbol)

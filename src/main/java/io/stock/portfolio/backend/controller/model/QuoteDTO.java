@@ -6,20 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class DividendResponse {
+public class QuoteDTO {
     private String symbol;
-    private BigDecimal dollarBruttoAmount;
-    private BigDecimal euroBruttoAmount;
-    private BigDecimal euroNettoAmount;
-    private LocalDateTime paymentDate;
-    private LocalDateTime exDate;
-    private Integer shareAmount;
-    private BigDecimal amountPerShare;
+    private BigDecimal price;
 }

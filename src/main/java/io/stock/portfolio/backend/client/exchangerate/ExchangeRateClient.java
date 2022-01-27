@@ -1,12 +1,14 @@
 package io.stock.portfolio.backend.client.exchangerate;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -19,6 +21,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ExchangeRateClient {
 
     private static final String BASE_PATH = "http://api.exchangeratesapi.io/v1/{date}";
@@ -39,16 +42,19 @@ public class ExchangeRateClient {
         urlParams.put("date", formattedDate);
         builder.build(urlParams);
 
-
-        ResponseEntity<Response> responseEntity = restTemplate.exchange(
-                builder.buildAndExpand(urlParams).toUri(),
-                HttpMethod.GET,
-                new HttpEntity<>(new LinkedMultiValueMap<>()),
-                Response.class);
-
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            return convertToRate(Objects.requireNonNull(responseEntity.getBody()));
+        try {
+            ResponseEntity<Response> responseEntity = restTemplate.exchange(
+                    builder.buildAndExpand(urlParams).toUri(),
+                    HttpMethod.GET,
+                    new HttpEntity<>(new LinkedMultiValueMap<>()),
+                    Response.class);
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                return convertToRate(Objects.requireNonNull(responseEntity.getBody()));
+            }
+        } catch (RestClientException e) {
+            log.error(e.getMessage(), e);
         }
+
         return BigDecimal.ZERO;
     }
 

@@ -77,30 +77,28 @@ public class DividendService {
     private DividendResponse convertToResponse(DividendEntity dividendEntity) {
 
         BigDecimal dollarBruttoAmount = dividendEntity.getAmountPerShare().multiply(new BigDecimal(dividendEntity.getShareAmount()));
-        BigDecimal dollarNettoAmount = calculateAfterUSATax(dollarBruttoAmount);
-        BigDecimal euroBruttoAmount = dollarNettoAmount.divide(dividendEntity.getExchangeRate(), RoundingMode.HALF_DOWN);
-        BigDecimal euroNettoAmount = calculateAfterAustrianTax(euroBruttoAmount);
+        BigDecimal euroBruttoAmount = BigDecimal.ZERO;
+        BigDecimal euroNettoAmount = BigDecimal.ZERO;
+
+        if (!dividendEntity.getExchangeRate().stripTrailingZeros().equals(BigDecimal.ZERO)) {
+            euroBruttoAmount = dollarBruttoAmount.divide(dividendEntity.getExchangeRate(), RoundingMode.HALF_DOWN);
+            euroNettoAmount = calculateAfterTax(euroBruttoAmount);
+        }
 
         return new DividendResponse()
                 .setSymbol(dividendEntity.getSymbol())
                 .setExDate(dividendEntity.getExDate())
                 .setPaymentDate(dividendEntity.getExDate())
                 .setShareAmount(dividendEntity.getShareAmount())
-                .setAmountPerShare(dollarBruttoAmount.divide(new BigDecimal(dividendEntity.getShareAmount()), RoundingMode.HALF_DOWN))
+                .setAmountPerShare(dividendEntity.getAmountPerShare())
                 .setDollarBruttoAmount(dollarBruttoAmount)
                 .setEuroBruttoAmount(euroBruttoAmount)
-                .setDollarNettoAmount(dollarNettoAmount)
                 .setEuroNettoAmount(euroNettoAmount);
     }
 
-    private BigDecimal calculateAfterAustrianTax(BigDecimal euroBruttoAmount) {
-        //12,5% KEST
-        return euroBruttoAmount.multiply(new BigDecimal("0.875"));
-    }
-
-    private BigDecimal calculateAfterUSATax(BigDecimal dollarBruttoAmount) {
-        //15% Quellensteuer
-        return dollarBruttoAmount.multiply(new BigDecimal("0.85"));
+    private BigDecimal calculateAfterTax(BigDecimal euroBruttoAmount) {
+        //27,5% KEST + Quellensteuer
+        return euroBruttoAmount.multiply(new BigDecimal("0.725"));
     }
 
     private List<DividendEntity> retrieveAndSaveDividends(String symbol, String owner, LocalDateTime lastDividendDate) {
