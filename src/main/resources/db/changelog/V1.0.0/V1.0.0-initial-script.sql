@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS transaction
     date TIMESTAMP NOT NULL,
     symbol VARCHAR(8) NOT NULL,
     owner    VARCHAR(6) NOT NULL,
-    argument INTEGER    NOT NULL,
+    argument NUMERIC(8,4)    NOT NULL,
     operator VARCHAR(1) NOT NULL,
     price    NUMERIC(8,4)
     );
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS transaction
 CREATE TABLE IF NOT EXISTS stock
 (
     id BIGSERIAL UNIQUE PRIMARY KEY,
-    euSymbol VARCHAR(8) NOT NULL,
+    euSymbol VARCHAR(8) UNIQUE NOT NULL,
     usSymbol VARCHAR(8),
     stockName VARCHAR(35) NOT NULL
 );

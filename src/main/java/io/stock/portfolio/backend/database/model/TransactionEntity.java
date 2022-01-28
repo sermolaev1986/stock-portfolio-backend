@@ -23,7 +23,7 @@ public class TransactionEntity {
     @Column(name = "owner")
     private String owner;
     @Column(name = "argument")
-    private Integer argument;
+    private BigDecimal argument;
     @Convert(converter = OperatorConverter.class)
     @Column(name = "operator")
     private Operator operator;
@@ -35,7 +35,7 @@ public class TransactionEntity {
         if (isSplit()) {
             return BigDecimal.ZERO;
         } else {
-            return price.multiply(new BigDecimal(argument));
+            return price.multiply(argument);
         }
     }
 

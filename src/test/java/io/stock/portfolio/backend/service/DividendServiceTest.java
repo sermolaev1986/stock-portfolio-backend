@@ -63,17 +63,17 @@ class DividendServiceTest {
 
         TransactionEntity buy = new TransactionEntity()
                 .setDate(firstTransactionDate)
-                .setArgument(10)
+                .setArgument(BigDecimal.TEN)
                 .setOperator(Operator.PLUS);
 
         TransactionEntity moreBuy = new TransactionEntity()
                 .setDate(LocalDateTime.parse("2020-02-12 06:00:00", formatter))
-                .setArgument(3)
+                .setArgument(new BigDecimal(3))
                 .setOperator(Operator.PLUS);
 
         TransactionEntity sell = new TransactionEntity()
                 .setDate(LocalDateTime.parse("2020-12-10 06:00:00", formatter))
-                .setArgument(5)
+                .setArgument(new BigDecimal(5))
                 .setOperator(Operator.MINUS);
 
         when(transactionRepository.findBySymbolAndOwnerOrderByDateAsc("APP", "Olga"))

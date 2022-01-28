@@ -1,5 +1,6 @@
 
 DROP TABLE IF EXISTS position;
+DROP TABLE IF EXISTS stock;
 DROP TABLE IF EXISTS dividend;
 DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS databasechangelog;

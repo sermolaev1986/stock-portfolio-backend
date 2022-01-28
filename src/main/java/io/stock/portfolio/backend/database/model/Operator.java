@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 public enum Operator {
     PLUS("+") {
         @Override
-        public BigDecimal calculateAmountOfShares(BigDecimal firstArg, Integer secondArg) {
-            return firstArg.add(new BigDecimal(secondArg));
+        public BigDecimal calculateAmountOfShares(BigDecimal firstArg, BigDecimal secondArg) {
+            return firstArg.add(secondArg);
         }
 
         @Override
@@ -16,19 +16,21 @@ public enum Operator {
     },
     MINUS("-") {
         @Override
-        public BigDecimal calculateAmountOfShares(BigDecimal firstArg, Integer secondArg) {
-            return firstArg.subtract(new BigDecimal(secondArg));
+        public BigDecimal calculateAmountOfShares(BigDecimal firstArg, BigDecimal secondArg) {
+            return firstArg.subtract(secondArg);
         }
 
         @Override
         public BigDecimal calculateTotalPrice(BigDecimal firstArg, BigDecimal secondArg) {
-            return firstArg.subtract(secondArg);
+            return firstArg
+                    .subtract(secondArg)
+                    .multiply(new BigDecimal("0.725"));
         }
     },
     MULTIPLY("*") {
         @Override
-        public BigDecimal calculateAmountOfShares(BigDecimal firstArg, Integer secondArg) {
-            return firstArg.multiply(new BigDecimal(secondArg));
+        public BigDecimal calculateAmountOfShares(BigDecimal firstArg, BigDecimal secondArg) {
+            return firstArg.multiply(secondArg);
         }
 
         @Override
@@ -41,7 +43,7 @@ public enum Operator {
     Operator(String action) {
     }
 
-    public BigDecimal calculateAmountOfShares(BigDecimal firstArg, Integer secondArg) {
+    public BigDecimal calculateAmountOfShares(BigDecimal firstArg, BigDecimal secondArg) {
         return BigDecimal.ZERO;
     }
 
