@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -20,8 +21,11 @@ public class PositionEntity {
     @Column(name = "symbol")
     private String symbol;
 
+    @Column(name = "stockName")
+    private String name;
+
     @Column(name = "stockCount")
-    private Integer stockCount;
+    private BigDecimal stockCount;
 
     @Column(name = "owner")
     private String owner;

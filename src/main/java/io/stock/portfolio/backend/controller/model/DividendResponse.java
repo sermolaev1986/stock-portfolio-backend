@@ -20,6 +20,6 @@ public class DividendResponse {
     private BigDecimal euroNettoAmount;
     private LocalDateTime paymentDate;
     private LocalDateTime exDate;
-    private Integer shareAmount;
+    private BigDecimal shareAmount;
     private BigDecimal amountPerShare;
 }

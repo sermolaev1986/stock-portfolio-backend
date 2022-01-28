@@ -89,12 +89,12 @@ public class TransactionService {
         Optional<PositionEntity> maybePosition = positionRepository.findBySymbolAndOwner(transactionDTO.getSymbol(), transactionDTO.getOwner());
         if (maybePosition.isPresent()) {
             PositionEntity position = maybePosition.get();
-            Integer stockCountBefore = position.getStockCount();
+            BigDecimal stockCountBefore = position.getStockCount();
 
-            Integer stockCountAfter = transactionEntity.getOperator().calculateAmountOfShares(stockCountBefore, transactionEntity.getArgument());
+            BigDecimal stockCountAfter = transactionEntity.getOperator().calculateAmountOfShares(stockCountBefore, transactionEntity.getArgument());
             position.setStockCount(stockCountAfter); // Should be updated TODO Check
         } else {
-            Integer stockCount = transactionEntity.getOperator().calculateAmountOfShares(0, transactionEntity.getArgument());
+            BigDecimal stockCount = transactionEntity.getOperator().calculateAmountOfShares(BigDecimal.ZERO, transactionEntity.getArgument());
 
             PositionEntity position = new PositionEntity()
                     .setOwner(transactionDTO.getOwner())

@@ -76,7 +76,7 @@ public class DividendService {
 
     private DividendResponse convertToResponse(DividendEntity dividendEntity) {
 
-        BigDecimal dollarBruttoAmount = dividendEntity.getAmountPerShare().multiply(new BigDecimal(dividendEntity.getShareAmount()));
+        BigDecimal dollarBruttoAmount = dividendEntity.getAmountPerShare().multiply(dividendEntity.getShareAmount());
         BigDecimal euroBruttoAmount = BigDecimal.ZERO;
         BigDecimal euroNettoAmount = BigDecimal.ZERO;
 
@@ -128,7 +128,7 @@ public class DividendService {
         List<TransactionEntity> transactionsSorted = transactionRepository.findBySymbolAndOwnerOrderByDateAsc(symbol, owner);
 
         List<PeriodWithAmount> periods = new ArrayList<>();
-        int currentAmountOfShares = 0;
+        BigDecimal currentAmountOfShares = BigDecimal.ZERO;
 
         if (transactionsSorted.size() > 1) {
             for (int i = 0; i < transactionsSorted.size() - 1; i++) {
@@ -146,7 +146,7 @@ public class DividendService {
         List<PeriodWithAmount> newPeriods = periods
                 .stream()
                 .filter(per -> per.lastsAfter(lastDividendDate))
-                .filter(per -> per.getAmountOfShares() != 0)
+                .filter(per -> !per.getAmountOfShares().equals(BigDecimal.ZERO))
                 .collect(toList());
 
         List<DividendEntity> dividendEntities = newPeriods
@@ -186,9 +186,9 @@ public class DividendService {
     private static class PeriodWithAmount {
         private LocalDateTime from;
         private LocalDateTime to;
-        private Integer amountOfShares;
+        private BigDecimal amountOfShares;
 
-        public Integer getAmountOfShares() {
+        public BigDecimal getAmountOfShares() {
             return amountOfShares;
         }
 

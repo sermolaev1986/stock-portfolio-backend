@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS position
 (
     id BIGSERIAL UNIQUE PRIMARY KEY,
     symbol VARCHAR(8) NOT NULL,
-    stockCount INTEGER    NOT NULL,
+    stockName VARCHAR(35) NOT NULL,
+    stockCount NUMERIC(8,4)    NOT NULL,
     owner      VARCHAR(6) NOT NULL,
     buyDate    TIMESTAMP  NOT NULL,
     broker     VARCHAR(8) NOT NULL
@@ -18,7 +19,7 @@ CREATE TABLE IF NOT EXISTS dividend
     amountPerShare NUMERIC(8,4) NOT NULL,
     exchangeRate   NUMERIC(8,4) NOT NULL,
     exDate         TIMESTAMP  NOT NULL,
-    shareAmount    INTEGER    NOT NULL,
+    shareAmount    NUMERIC(8,4)    NOT NULL,
     owner          VARCHAR(6) NOT NULL
     );
 
@@ -34,139 +35,137 @@ CREATE TABLE IF NOT EXISTS transaction
     );
 
 
-INSERT INTO position (symbol, stockCount, owner, buyDate, broker)
+INSERT INTO position (symbol, stockName, stockCount, owner, buyDate, broker)
 VALUES
     -- Apple
-    ('APC', 60, 'Sergei', '2018-11-12T15:23:48.388', 'Flatex'),
+    ('APC', 'Apple', 60, 'Sergei', '2018-11-12T15:23:48.388', 'Flatex'),
     -- Microsoft
-    ('MSF', 19, 'Sergei', '2018-11-13T15:23:48.388', 'Flatex'),
+    ('MSF', 'Microsoft', 19, 'Sergei', '2018-11-13T15:23:48.388', 'Flatex'),
     -- Accenture
-    ('CSA', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
+    ('CSA', 'Accenture', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
     -- Severstal
-    ('RTS2', 227, 'Olga', '2021-01-15T15:23:48.388', 'Dadat'),
-    ('RTS2', 8, 'Andrei', '2021-08-31T15:23:48.388', 'Dadat'),
-    ('RTS2', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
+    ('RTS2', 'Severstal', 227, 'Olga', '2021-01-15T15:23:48.388', 'Dadat'),
+    ('RTS2', 'Severstal', 8, 'Andrei', '2021-08-31T15:23:48.388', 'Dadat'),
+    ('RTS2', 'Severstal', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
 --        Coca Cola
-    ('CCC3', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
-    ('CCC3', 31, 'Sergei', '2021-11-10T15:23:48.388', 'Dadat'),
-    ('CCC3', 31, 'Olga', '2021-11-10T15:23:48.388', 'Dadat'),
+-- TODO fix non unique for the same symbol on different brokers
+    ('CCC3', 'Coca-Cola', 31, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
+--     ('CCC3', 'Coca-Cola', 31, 'Sergei', '2021-11-10T15:23:48.388', 'Dadat'),
+    ('CCC3', 'Coca-Cola', 31, 'Olga', '2021-11-10T15:23:48.388', 'Dadat'),
     -- Broadcom
-    ('1YD', 5, 'Olga', '2021-09-10T15:23:48.388', 'Dadat'),
-    ('1YD', 3, 'Sergei', '2021-11-12T15:23:48.388', 'Dadat'),
+    ('1YD', 'Broadcom', 5, 'Olga', '2021-09-10T15:23:48.388', 'Dadat'),
+    ('1YD', 'Broadcom', 3, 'Sergei', '2021-11-12T15:23:48.388', 'Dadat'),
     -- Home Depot
-    ('HDI', 9, 'Olga', '2021-09-13T15:23:48.388', 'Dadat'),
+    ('HDI', 'Home Depot', 9, 'Olga', '2021-09-13T15:23:48.388', 'Dadat'),
     -- Exxon
-    ('XONA', 91, 'Olga', '2020-12-22T15:23:48.388', 'Dadat'),
+    ('XONA', 'Exxon', 91, 'Olga', '2020-12-22T15:23:48.388', 'Dadat'),
     -- AT&T
-    ('SOBA', 80, 'Olga', '2020-12-22T15:23:48.388', 'Dadat'),
-    ('SOBA', 0, 'Sergei', '2018-11-09T15:23:48.388', 'Flatex'),
+    ('SOBA', 'AT&T', 80, 'Olga', '2020-12-22T15:23:48.388', 'Dadat'),
+    ('SOBA', 'AT&T', 0, 'Sergei', '2018-11-09T15:23:48.388', 'Flatex'),
     -- Federal Realty
-    ('WX2', 37, 'Olga', '2020-12-11T15:23:48.388', 'Dadat'),
-    ('WX2', 8, 'Andrei', '2020-12-11T15:23:48.388', 'Dadat'),
+    ('WX2', 'FRIT', 37, 'Olga', '2020-12-11T15:23:48.388', 'Dadat'),
+    ('WX2', 'FRIT', 8, 'Andrei', '2020-12-11T15:23:48.388', 'Dadat'),
     -- Pepsi
-    ('PEP', 24, 'Olga', '2020-12-28T15:23:48.388', 'Dadat'),
+    ('PEP', 'Pepsi', 24, 'Olga', '2020-12-28T15:23:48.388', 'Dadat'),
     -- Walt Disney
-    ('WDP', 20, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
+    ('WDP', 'Walt Disney', 20, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
     -- Amazon
-    ('AMZ', 1, 'Sergei', '2021-08-30T15:23:48.388', 'Flatex'),
+    ('AMZ', 'Amazon', 1, 'Sergei', '2021-08-30T15:23:48.388', 'Flatex'),
     -- Lukoil
-    ('LUK', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
+    ('LUK', 'Lukoil', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
     -- Pfizer
-    ('PFE', 44, 'Sergei', '2020-03-20T15:23:48.388', 'Flatex'),
+    ('PFE', 'Pfizer', 44, 'Sergei', '2020-03-20T15:23:48.388', 'Flatex'),
     -- Blizzard
-    ('AIY', 0, 'Sergei', '2018-11-09T15:23:48.388', 'Flatex'),
+    ('AIY', 'Blizzard', 0, 'Sergei', '2018-11-09T15:23:48.388', 'Flatex'),
     -- Boeing
-    ('BCO', 0, 'Sergei', '2019-03-15T15:23:48.388', 'Flatex'),
+    ('BCO', 'Boeing', 0, 'Sergei', '2019-03-15T15:23:48.388', 'Flatex'),
     -- Canopy Growth
-    ('11L1', 20, 'Sergei', '2018-11-05T15:23:48.388', 'Flatex'),
+    ('11L1', 'Canopy Growth', 20, 'Sergei', '2018-11-05T15:23:48.388', 'Flatex'),
     -- Teva
-    ('TEV', 0, 'Sergei', '2018-11-05T15:23:48.388', 'Flatex'),
+    ('TEV', 'Teva', 0, 'Sergei', '2018-11-05T15:23:48.388', 'Flatex'),
     -- Procter & Gamble
-    ('PRG', 19, 'Olga', '2021-09-17T15:23:48.388', 'Dadat'),
+    ('PRG', 'P&G', 19, 'Olga', '2021-09-17T15:23:48.388', 'Dadat'),
     -- AMD
-    ('AMD', 22, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
+    ('AMD', 'AMD', 22, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
     -- PayPal
-    ('2PP', 8, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
+    ('2PP', 'PayPal', 8, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
     -- TCS Group
-    ('13T1', 20, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
+    ('13T1', 'Tinkoff', 20, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
     -- EPAM
-    ('E3M', 5, 'Sergei', '2021-10-04T15:23:48.388', 'Flatex'),
+    ('E3M', 'EPAM', 5, 'Sergei', '2021-10-04T15:23:48.388', 'Flatex'),
     -- Netflix
-    ('NFC', 5, 'Sergei', '2021-10-04T15:23:48.388', 'Flatex'),
+    ('NFC', 'Netflix', 5, 'Sergei', '2021-10-04T15:23:48.388', 'Flatex'),
     -- Gold Trust
-    ('GQ9', 13, 'Sergei', '2020-03-18T15:23:48.388', 'Flatex'),
+    ('GQ9', 'Gold Trust', 13, 'Sergei', '2020-03-18T15:23:48.388', 'Flatex'),
     -- Salesforce
-    ('FOO', 5, 'Sergei', '2021-10-05T15:23:48.388', 'Flatex'),
+    ('FOO', 'Salesforce', 5, 'Sergei', '2021-10-05T15:23:48.388', 'Flatex'),
     -- NVIDIA
-    ('NVD', 7, 'Sergei', '2021-10-05T15:23:48.388', 'Flatex'),
+    ('NVD', 'NVIDIA', 7, 'Sergei', '2021-10-05T15:23:48.388', 'Flatex'),
     -- Mastercard
-    ('M4I', 6, 'Sergei', '2021-11-12T15:23:48.388', 'Flatex'),
+    ('M4I', 'Mastercard', 6, 'Sergei', '2021-11-12T15:23:48.388', 'Flatex'),
     -- Visa
-    ('3V64', 11, 'Sergei', '2021-11-12T15:23:48.388', 'Flatex'),
+    ('3V64', 'Visa', 11, 'Sergei', '2021-11-12T15:23:48.388', 'Flatex'),
     -- McDonalds
-    ('MDO', 5, 'Sergei', '2021-11-16T15:23:48.388', 'Flatex'),
-    -- Paypal
-    ('2PP', 8, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
+    ('MDO', 'McDonalds', 5, 'Sergei', '2021-11-16T15:23:48.388', 'Flatex'),
     -- Starbucks
-    ('SRB', 16, 'Sergei', '2021-11-18T15:23:48.388', 'Flatex'),
+    ('SRB', 'Starbucks', 16, 'Sergei', '2021-11-18T15:23:48.388', 'Flatex'),
     -- Tesla
-    ('TL0', 2, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
+    ('TL0', 'Tesla', 2, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
     -- Realty Income
-    ('RY6', 17, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
-    ('RY6', 24, 'Olga', '2021-11-08T15:23:48.388', 'Flatex'),
+    ('RY6', 'Realty Income', 17, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
+    ('RY6', 'Realty Income', 24, 'Olga', '2021-11-08T15:23:48.388', 'Flatex'),
     -- Stag
-    ('SW6', 28, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
-    ('SW6', 41, 'Olga', '2021-11-08T15:23:48.388', 'Flatex'),
+    ('SW6', 'Stag', 28, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
+    ('SW6', 'Stag', 41, 'Olga', '2021-11-08T15:23:48.388', 'Flatex'),
     -- WP Carey
-    ('WPY', 15, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
-    ('WPY', 23, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('WPY', 'WP Carey', 15, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('WPY', 'WP Carey', 23, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
     -- Easterly
-    ('E05.F', 53, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
-    ('E05.F', 81, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('E05.F', 'Easterly', 53, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('E05.F', 'Easterly', 81, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
     -- Iron Mountain
-    ('I5M', 24, 'Sergei', '2021-11-10T15:23:48.388', 'Dadat'),
-    ('I5M', 37, 'Olga', '2021-11-10T15:23:48.388', 'Dadat'),
+    ('I5M', 'Iron Mountain', 24, 'Sergei', '2021-11-10T15:23:48.388', 'Dadat'),
+    ('I5M', 'Iron Mountain', 37, 'Olga', '2021-11-10T15:23:48.388', 'Dadat'),
     -- Altria Group
-    ('PHM7', 70, 'Sergei', '2021-11-18T15:23:48.388', 'Dadat'),
+    ('PHM7', 'Altria', 70, 'Sergei', '2021-11-18T15:23:48.388', 'Dadat'),
     -- Cisco Systems
-    ('CIS', 30, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
-    ('CIS', 30, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('CIS', 'Cisco', 30, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('CIS', 'Cisco', 30, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
     -- Mondelez
-    ('KTF', 30, 'Sergei', '2021-11-12T15:23:48.388', 'Dadat'),
-    ('KTF', 30, 'Olga', '2021-11-12T15:23:48.388', 'Dadat'),
+    ('KTF', 'Mondelez', 30, 'Sergei', '2021-11-12T15:23:48.388', 'Dadat'),
+    ('KTF', 'Mondelez', 30, 'Olga', '2021-11-12T15:23:48.388', 'Dadat'),
     -- Johnson&Johnson
-    ('JNJ', 23, 'Sergei', '2022-01-18T15:23:48.388', 'Dadat'),
-    -- TODO fix fractional ETF shares
+    ('JNJ', 'Johnson&Johnson', 23, 'Sergei', '2022-01-18T15:23:48.388', 'Dadat'),
     -- HSBC MSCI RUSSIA
-    ('H4ZM', 220, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('H4ZM', 82, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('H4ZM', 'Russia ETF', 221.62, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('H4ZM', 'Russia ETF', 83.15, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- IShares Euro High Yield Corporate Bond
-    ('EUNW', 10, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('EUNW', 25, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('EUNW', 'Euro High Yield Corporate Bond', 9.78, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('EUNW', 'Euro High Yield Corporate Bond', 24.47, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- IShares TIPS
-    ('SXRH', 544, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('SXRH', 544, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('SXRH', 'TIPS', 544.07, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('SXRH', 'TIPS', 544.07, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Lyxor Euro government inflation-linked bonds
-    ('E15H.F', 16, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('E15H.F', 16, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('E15H.F', 'Euro Gov. Inflation-linked bond', 16.575, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('E15H.F', 'Euro Gov. Inflation-linked bond', 16.575, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Vanguard FTSE 100
-    ('VUKE', 64, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VUKE', 64, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VUKE', 'Great Britain stocks', 64.335, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VUKE', 'Great Britain stocks', 64.335, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Vanguard FTSE All-World High Dividend yield
-    ('VGWD', 39, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VGWD', 39, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VGWD', 'FTSE All-World High Div. Yield', 39.15, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VGWD', 'FTSE All-World High Div. Yield', 39.15, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Vanguard FTSE All-World Distributing
-    ('VGWL', 32, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VGWL', 32, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VGWL', 'FTSE All-World Dist.', 32.55, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VGWL', 'FTSE All-World Dist.', 32.55, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Vanguard FTSE All-World Accumulating
-    ('VWCE', 34, 'Sergei', '2020-02-18T15:23:48.388', 'Flatex'),
-    -- Vanguard S&P 500 Distributing
-    ('VUSA', 77, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VWCE', 'FTSE All-World Acc.', 34.72, 'Sergei', '2020-02-18T15:23:48.388', 'Flatex'),
     -- Vanguard S&P 500 Accumulating
-    ('VUAA', 35, 'Sergei', '2021-08-16T15:23:48.388', 'Flatex'),
+    ('VUAA', 'S&P 500 Acc.', 35.78, 'Sergei', '2021-08-16T15:23:48.388', 'Flatex'),
+    -- Vanguard S&P 500 Distributing
+    ('VUSA', 'S&P 500 Dist.', 77.06, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Vanguard USD Corporate Bond
-    ('VUCP', 51, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VUCP', 51, 'Olga', '2021-11-15T15:23:48.388', 'Flatex')
+    ('VUCP', 'USD Corporate Bond', 51.03, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VUCP', 'USD Corporate Bond', 51.03, 'Olga', '2021-11-15T15:23:48.388', 'Flatex')
 ;
 
 INSERT INTO transaction (symbol, argument, operator, price, owner, date)
@@ -255,8 +254,6 @@ VALUES
         ('3V64', 11, '+', 185.68, 'Sergei', '2021-11-12T15:23:48.388'),
         -- Sergei McDonalds
         ('MDO', 5, '+', 223.3, 'Sergei', '2021-11-16T15:23:48.388'),
-        -- Sergei Paypal
-        ('2PP', 8, '+', 247.2, 'Sergei', '2021-09-07T15:23:48.388'),
         -- Sergei Starbucks
         ('SRB', 16, '+', 98.79, 'Sergei', '2021-11-18T15:23:48.388'),
         -- Sergei Tesla
@@ -266,9 +263,9 @@ VALUES
         -- Olga Realty Income
         ('RY6', 24, '+', 61.72, 'Olga', '2021-11-08T15:23:48.388'),
         -- Sergei Stag
-        ('SW6', 28, '+', 61.72, 'Sergei', '2021-11-08T15:23:48.388'),
+        ('SW6', 28, '+', 36.66, 'Sergei', '2021-11-08T15:23:48.388'),
         -- Olga Stag
-        ('SW6', 41, '+', 61.72, 'Olga', '2021-11-08T15:23:48.388'),
+        ('SW6', 41, '+', 36.66, 'Olga', '2021-11-08T15:23:48.388'),
         -- Olga WP Carey
         ('WPY', 23, '+', 67.3, 'Olga', '2021-11-08T15:23:48.388'),
         -- Sergei WP Carey
@@ -296,82 +293,81 @@ VALUES
         -- Sergei Johnson&Johnson
         ('JNJ', 23, '+', 147.04, 'Sergei', '2022-01-18T15:23:48.388'),
 
-        -- TODO fix fractional ETF shares
-        -- FTSE All-World accumulating
-        ('VWCE', 7, '+', 75.43, 'Sergei', '2020-02-18T15:23:48.388'),
-        ('VWCE', 8, '+', 75.43, 'Sergei', '2020-05-18T15:23:48.388'),
-        ('VWCE', 8, '+', 75.42, 'Sergei', '2020-08-18T15:23:48.388'),
-        ('VWCE', 5, '+', 91.14, 'Sergei', '2021-04-15T15:23:48.388'),
-        ('VWCE', 5, '+', 95.67, 'Sergei', '2021-07-15T15:23:48.388'),
-
-        -- Vanguard S&P 500 Accumulating
-        ('VUAA', 14, '+', 71.55, 'Sergei', '2021-08-16T15:23:48.388'),
-        ('VUAA', 21, '+', 71.55, 'Sergei', '2021-10-15T15:23:48.388'),
-
-        -- Russia
-        ('H4ZM', 38, '+', 12.88, 'Sergei', '2021-11-15T15:23:48.388'),
-        ('H4ZM', 38, '+', 12.88, 'Olga', '2021-11-15T15:23:48.388'),
-        ('H4ZM', 44, '+', 11.25, 'Sergei', '2021-12-15T15:23:48.388'),
-        ('H4ZM', 44, '+', 11.25, 'Olga', '2021-12-15T15:23:48.388'),
+        -- HSBC MSCI Russia
+        ('H4ZM', 38.775, '+', 12.88, 'Sergei', '2021-11-15T15:23:48.388'),
+        ('H4ZM', 38.775, '+', 12.88, 'Olga', '2021-11-15T15:23:48.388'),
+        ('H4ZM', 44.375, '+', 11.25, 'Sergei', '2021-12-15T15:23:48.388'),
+        ('H4ZM', 44.375, '+', 11.25, 'Olga', '2021-12-15T15:23:48.388'),
         ('H4ZM', 138.47, '+', 10.82, 'Sergei', '2022-01-17T15:23:48.388'),
 
         -- IShares Euro High Yield Corporate Bond
-        ('EUNW', 5, '+', 102.08, 'Sergei', '2021-11-15T15:23:48.388'),
-        ('EUNW', 5, '+', 102.08, 'Olga', '2021-11-15T15:23:48.388'),
-        ('EUNW', 5, '+', 102.08, 'Sergei', '2021-12-15T15:23:48.388'),
-        ('EUNW', 5, '+', 102.08, 'Olga', '2021-12-15T15:23:48.388'),
-        ('EUNW', 15, '+', 102.01, 'Olga', '2022-01-17T15:23:48.388'),
+        ('EUNW', 4.89, '+', 102.08, 'Sergei', '2021-11-15T15:23:48.388'),
+        ('EUNW', 4.89, '+', 102.08, 'Olga', '2021-11-15T15:23:48.388'),
+        ('EUNW', 4.89, '+', 102.08, 'Sergei', '2021-12-15T15:23:48.388'),
+        ('EUNW', 4.89, '+', 102.08, 'Olga', '2021-12-15T15:23:48.388'),
+        ('EUNW', 14.69, '+', 102.01, 'Olga', '2022-01-17T15:23:48.388'),
 
         -- IShares TIPS
-        ('SXRH', 108, '+', 4.6, 'Sergei', '2021-11-15T15:23:48.388'),
-        ('SXRH', 108, '+', 4.6, 'Olga', '2021-11-15T15:23:48.388'),
-        ('SXRH', 108, '+', 4.63, 'Sergei', '2021-12-15T15:23:48.388'),
-        ('SXRH', 108, '+', 4.63, 'Olga', '2021-12-15T15:23:48.388'),
-        ('SXRH', 328, '+', 4.57, 'Sergei', '2022-01-17T15:23:48.388'),
-        ('SXRH', 328, '+', 4.57, 'Olga', '2022-01-17T15:23:48.388'),
+        ('SXRH', 108.45, '+', 4.6, 'Sergei', '2021-11-15T15:23:48.388'),
+        ('SXRH', 108.45, '+', 4.6, 'Olga', '2021-11-15T15:23:48.388'),
+        ('SXRH', 107.765, '+', 4.63, 'Sergei', '2021-12-15T15:23:48.388'),
+        ('SXRH', 107.765, '+', 4.63, 'Olga', '2021-12-15T15:23:48.388'),
+        ('SXRH', 327.855, '+', 4.57, 'Sergei', '2022-01-17T15:23:48.388'),
+        ('SXRH', 327.855, '+', 4.57, 'Olga', '2022-01-17T15:23:48.388'),
 
         -- Lyxor Euro government inflation-linked bonds
-        ('E15H.F', 3, '+', 152.15, 'Sergei', '2021-11-15T15:23:48.388'),
-        ('E15H.F', 3, '+', 152.15, 'Olga', '2021-11-15T15:23:48.388'),
-        ('E15H.F', 3, '+', 152, 'Sergei', '2021-12-15T15:23:48.388'),
-        ('E15H.F', 3, '+', 152, 'Olga', '2021-12-15T15:23:48.388'),
-        ('E15H.F', 10, '+', 149.79, 'Sergei', '2022-01-17T15:23:48.388'),
-        ('E15H.F', 10, '+', 149.79, 'Olga', '2022-01-17T15:23:48.388'),
+        ('E15H.F', 3.28, '+', 152.15, 'Sergei', '2021-11-15T15:23:48.388'),
+        ('E15H.F', 3.28, '+', 152.15, 'Olga', '2021-11-15T15:23:48.388'),
+        ('E15H.F', 3.285, '+', 152, 'Sergei', '2021-12-15T15:23:48.388'),
+        ('E15H.F', 3.285, '+', 152, 'Olga', '2021-12-15T15:23:48.388'),
+        ('E15H.F', 10.01, '+', 149.79, 'Sergei', '2022-01-17T15:23:48.388'),
+        ('E15H.F', 10.01, '+', 149.79, 'Olga', '2022-01-17T15:23:48.388'),
 
         -- Vanguard FTSE 100
-        ('VUKE', 13, '+', 37.83, 'Sergei', '2021-11-15T15:23:48.388'),
-        ('VUKE', 13, '+', 37.83, 'Olga', '2021-11-15T15:23:48.388'),
-        ('VUKE', 13, '+', 26.95, 'Sergei', '2021-12-15T15:23:48.388'),
-        ('VUKE', 13, '+', 26.95, 'Olga', '2021-12-15T15:23:48.388'),
-        ('VUKE', 37, '+', 39.81, 'Sergei', '2022-01-17T15:23:48.388'),
-        ('VUKE', 37, '+', 39.81, 'Olga', '2022-01-17T15:23:48.388'),
+        ('VUKE', 13.2, '+', 37.83, 'Sergei', '2021-11-15T15:23:48.388'),
+        ('VUKE', 13.2, '+', 37.83, 'Olga', '2021-11-15T15:23:48.388'),
+        ('VUKE', 13.475, '+', 26.95, 'Sergei', '2021-12-15T15:23:48.388'),
+        ('VUKE', 13.475, '+', 26.95, 'Olga', '2021-12-15T15:23:48.388'),
+        ('VUKE', 37.66, '+', 39.81, 'Sergei', '2022-01-17T15:23:48.388'),
+        ('VUKE', 37.66, '+', 39.81, 'Olga', '2022-01-17T15:23:48.388'),
 
         -- Vanguard FTSE All-World High Dividend yield
-        ('VGWD', 4, '+', 56.01, 'Sergei', '2021-11-15T15:23:48.388'),
-        ('VGWD', 4, '+', 56.01, 'Olga', '2021-11-15T15:23:48.388'),
-        ('VGWD', 9, '+', 55.59, 'Sergei', '2021-12-15T15:23:48.388'),
-        ('VGWD', 9, '+', 55.59, 'Olga', '2021-12-15T15:23:48.388'),
-        ('VGWD', 26, '+', 58.32, 'Sergei', '2022-01-17T15:23:48.388'),
-        ('VGWD', 26, '+', 58.32, 'Olga', '2022-01-17T15:23:48.388'),
+        ('VGWD', 4.45, '+', 56.01, 'Sergei', '2021-11-15T15:23:48.388'),
+        ('VGWD', 4.45, '+', 56.01, 'Olga', '2021-11-15T15:23:48.388'),
+        ('VGWD', 8.98, '+', 55.59, 'Sergei', '2021-12-15T15:23:48.388'),
+        ('VGWD', 8.98, '+', 55.59, 'Olga', '2021-12-15T15:23:48.388'),
+        ('VGWD', 25.72, '+', 58.32, 'Sergei', '2022-01-17T15:23:48.388'),
+        ('VGWD', 25.72, '+', 58.32, 'Olga', '2022-01-17T15:23:48.388'),
 
         -- Vanguard FTSE All-World Distributing
-        ('VGWL', 4, '+', 108.96, 'Sergei', '2021-11-15T15:23:48.388'),
-        ('VGWL', 4, '+', 108.96, 'Olga', '2021-11-15T15:23:48.388'),
-        ('VGWL', 14, '+', 107.03, 'Sergei', '2021-12-15T15:23:48.388'),
-        ('VGWL', 14, '+', 107.03, 'Olga', '2021-12-15T15:23:48.388'),
-        ('VGWL', 14, '+', 107.39, 'Sergei', '2022-01-17T15:23:48.388'),
-        ('VGWL', 14, '+', 107.39, 'Olga', '2022-01-17T15:23:48.388'),
+        ('VGWL', 4.58, '+', 108.96, 'Sergei', '2021-11-15T15:23:48.388'),
+        ('VGWL', 4.58, '+', 108.96, 'Olga', '2021-11-15T15:23:48.388'),
+        ('VGWL', 14.01, '+', 107.03, 'Sergei', '2021-12-15T15:23:48.388'),
+        ('VGWL', 14.01, '+', 107.03, 'Olga', '2021-12-15T15:23:48.388'),
+        ('VGWL', 13.96, '+', 107.39, 'Sergei', '2022-01-17T15:23:48.388'),
+        ('VGWL', 13.96, '+', 107.39, 'Olga', '2022-01-17T15:23:48.388'),
+
+        -- FTSE All-World accumulating
+        ('VWCE', 7.35, '+', 75.43, 'Sergei', '2020-02-18T15:23:48.388'),
+        ('VWCE', 8.61, '+', 75.43, 'Sergei', '2020-05-18T15:23:48.388'),
+        ('VWCE', 8.08, '+', 75.42, 'Sergei', '2020-08-18T15:23:48.388'),
+        ('VWCE', 5.47, '+', 91.14, 'Sergei', '2021-04-15T15:23:48.388'),
+        ('VWCE', 5.21, '+', 95.67, 'Sergei', '2021-07-15T15:23:48.388'),
+
+        -- Vanguard S&P 500 Accumulating
+        ('VUAA', 14.5, '+', 71.55, 'Sergei', '2021-08-16T15:23:48.388'),
+        ('VUAA', 21.28, '+', 71.55, 'Sergei', '2021-10-15T15:23:48.388'),
 
         -- Vanguard S&P 500 Distributing
-        ('VUSA', 13, '+', 78.84, 'Sergei', '2021-11-15T15:23:48.388'),
-        ('VUSA', 32, '+', 78.85, 'Sergei', '2021-12-15T15:23:48.388'),
-        ('VUSA', 32, '+', 78.85, 'Sergei', '2022-01-17T15:23:48.388'),
+        ('VUSA', 12.83, '+', 78.84, 'Sergei', '2021-11-15T15:23:48.388'),
+        ('VUSA', 32.02, '+', 78.85, 'Sergei', '2021-12-15T15:23:48.388'),
+        ('VUSA', 32.21, '+', 78.85, 'Sergei', '2022-01-17T15:23:48.388'),
 
         -- Vanguard USD Corporate Bond
-        ('VUCP', 5, '+', 49.57, 'Sergei', '2021-11-15T15:23:48.388'),
-        ('VUCP', 5, '+', 49.57, 'Olga', '2021-11-15T15:23:48.388'),
-        ('VUCP', 10, '+', 50.35, 'Sergei', '2021-12-15T15:23:48.388'),
-        ('VUCP', 10, '+', 50.35, 'Olga', '2021-12-15T15:23:48.388'),
-        ('VUCP', 36, '+', 48.48, 'Sergei', '2022-01-17T15:23:48.388'),
-        ('VUCP', 36, '+', 48.48, 'Olga', '2022-01-17T15:23:48.388')
+        ('VUCP', 5.03, '+', 49.57, 'Sergei', '2021-11-15T15:23:48.388'),
+        ('VUCP', 5.03, '+', 49.57, 'Olga', '2021-11-15T15:23:48.388'),
+        ('VUCP', 9.915, '+', 50.35, 'Sergei', '2021-12-15T15:23:48.388'),
+        ('VUCP', 9.915, '+', 50.35, 'Olga', '2021-12-15T15:23:48.388'),
+        ('VUCP', 36.085, '+', 48.48, 'Sergei', '2022-01-17T15:23:48.388'),
+        ('VUCP', 36.085, '+', 48.48, 'Olga', '2022-01-17T15:23:48.388')
 ;

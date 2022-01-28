@@ -26,7 +26,7 @@ public class DividendEntity {
     @Column(name = "exDate")
     private LocalDateTime exDate;
     @Column(name = "shareAmount")
-    private Integer shareAmount;
+    private BigDecimal shareAmount;
     @Column(name = "owner")
     private String owner;
 

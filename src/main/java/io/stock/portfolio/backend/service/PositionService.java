@@ -65,6 +65,7 @@ public class PositionService {
         return new PositionResponse()
                 .setOwner(entity.getOwner())
                 .setSymbol(entity.getSymbol())
+                .setName(entity.getName())
                 .setStockCount(entity.getStockCount())
                 .setBuyDate(entity.getBuyDate())
                 .setBroker(entity.getBroker());
