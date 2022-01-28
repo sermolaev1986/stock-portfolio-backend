@@ -21,9 +21,6 @@ public class PositionEntity {
     @Column(name = "symbol")
     private String symbol;
 
-    @Column(name = "stockName")
-    private String name;
-
     @Column(name = "stockCount")
     private BigDecimal stockCount;
 

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class PositionResponse {
     private String symbol;
+    private String usSymbol;
     private String name;
     private BigDecimal stockCount;
     private String owner;

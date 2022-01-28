@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS position
 (
     id BIGSERIAL UNIQUE PRIMARY KEY,
     symbol VARCHAR(8) NOT NULL,
-    stockName VARCHAR(35) NOT NULL,
     stockCount NUMERIC(8,4)    NOT NULL,
     owner      VARCHAR(6) NOT NULL,
     buyDate    TIMESTAMP  NOT NULL,
@@ -34,138 +33,202 @@ CREATE TABLE IF NOT EXISTS transaction
     price    NUMERIC(8,4)
     );
 
+CREATE TABLE IF NOT EXISTS stock
+(
+    id BIGSERIAL UNIQUE PRIMARY KEY,
+    euSymbol VARCHAR(8) NOT NULL,
+    usSymbol VARCHAR(8),
+    stockName VARCHAR(35) NOT NULL
+);
 
-INSERT INTO position (symbol, stockName, stockCount, owner, buyDate, broker)
+INSERT INTO stock (euSymbol, usSymbol, stockName)
+VALUES
+    ('APC', 'AAPL', 'Apple'),
+    ('MSF', 'MSFT', 'Microsoft'),
+    ('CSA', 'ACN', 'Accenture'),
+    ('RTS2', 'SVJTY', 'Severstal'),
+    ('CCC3', 'KO', 'Coca-Cola'),
+    ('1YD', 'AVGO', 'Broadcom'),
+    ('HDI', 'HD', 'Home Depot'),
+    ('XONA', 'XOM', 'Exxon'),
+    ('SOBA', 'T', 'AT&T'),
+    ('WX2', 'FRT', 'FRIT'),
+    ('PEP', 'PEP', 'Pepsi'),
+    ('WDP', 'DIS', 'Walt Disney'),
+    ('AMZ', 'AMZN', 'Amazon'),
+    ('LUK', 'LKOH', 'Lukoil'),
+    ('PFE', 'PFE', 'Pfizer'),
+    ('AIY', 'ATVI', 'Blizzard'),
+    ('BCO', 'BA', 'Boeing'),
+    ('11L1', 'CGC', 'Canopy Growth'),
+    ('TEV', 'TEVA', 'Teva'),
+    ('2PP', 'PYPL', 'PayPal'),
+    ('PRG', 'PG', 'P&G'),
+    ('13T1', 'TCSG', 'Tinkoff'),
+    ('NFC', 'NFLX', 'Netflix'),
+    ('E3M', 'EPAM', 'EPAM'),
+    ('FOO', 'CRM', 'Salesforce'),
+    ('NVD', 'NVDA', 'NVIDIA'),
+    ('AMD', 'AMD', 'AMD'),
+    ('GQ9', '?', 'Gold Trust'),
+    ('M4I', 'MA', 'MasterCard'),
+    ('3V64', 'V', 'VISA'),
+    ('MDO', 'MCD', 'McDonalds'),
+    ('SRB', 'SBUX', 'Starbucks'),
+    ('TL0', 'TSLA', 'Tesla'),
+    ('RY6', 'O', 'Realty Income'),
+    ('SW6', 'STAG', 'Stag'),
+    ('WPY', 'WPC', 'WP Carey'),
+    ('E05.F', 'DEA', 'Easterly'),
+    ('I5M', 'IRM', 'Iron Mountain'),
+    ('PHM7', 'MO', 'Altria'),
+    ('CIS', 'CSCO', 'Cisco'),
+    ('KTF', 'MDLZ', 'Mondelez'),
+    ('JNJ', 'JNJ', 'Johnson&Johnson'),
+    ('H4ZM', NULL, 'Russia ETF'),
+    ('EUNW', NULL, 'Euro High Yield Corporate Bond'),
+    ('SXRH', NULL, 'TIPS'),
+    ('E15H.F', NULL, 'Euro Gov. Inflation-linked bond'),
+    ('VUKE', NULL, 'Great Britain stocks'),
+    ('VGWD', NULL, 'FTSE All-World High Div. Yield'),
+    ('VGWL', NULL, 'FTSE All-World Dist.'),
+    ('VWCE', NULL, 'FTSE All-World Acc.'),
+    ('VUAA', NULL, 'S&P 500 Acc.'),
+    ('VUSA', NULL, 'S&P 500 Dist.'),
+    ('VUCP', NULL, 'USD Corporate Bond')
+;
+
+INSERT INTO position (symbol, stockCount, owner, buyDate, broker)
 VALUES
     -- Apple
-    ('APC', 'Apple', 60, 'Sergei', '2018-11-12T15:23:48.388', 'Flatex'),
+    ('APC', 60, 'Sergei', '2018-11-12T15:23:48.388', 'Flatex'),
     -- Microsoft
-    ('MSF', 'Microsoft', 19, 'Sergei', '2018-11-13T15:23:48.388', 'Flatex'),
+    ('MSF', 19, 'Sergei', '2018-11-13T15:23:48.388', 'Flatex'),
     -- Accenture
-    ('CSA', 'Accenture', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
+    ('CSA', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
     -- Severstal
-    ('RTS2', 'Severstal', 227, 'Olga', '2021-01-15T15:23:48.388', 'Dadat'),
-    ('RTS2', 'Severstal', 8, 'Andrei', '2021-08-31T15:23:48.388', 'Dadat'),
-    ('RTS2', 'Severstal', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
+    ('RTS2', 227, 'Olga', '2021-01-15T15:23:48.388', 'Dadat'),
+    ('RTS2',  8, 'Andrei', '2021-08-31T15:23:48.388', 'Dadat'),
+    ('RTS2', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
 --        Coca Cola
 -- TODO fix non unique for the same symbol on different brokers
-    ('CCC3', 'Coca-Cola', 31, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
+    ('CCC3', 31, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
 --     ('CCC3', 'Coca-Cola', 31, 'Sergei', '2021-11-10T15:23:48.388', 'Dadat'),
-    ('CCC3', 'Coca-Cola', 31, 'Olga', '2021-11-10T15:23:48.388', 'Dadat'),
+    ('CCC3', 31, 'Olga', '2021-11-10T15:23:48.388', 'Dadat'),
     -- Broadcom
-    ('1YD', 'Broadcom', 5, 'Olga', '2021-09-10T15:23:48.388', 'Dadat'),
-    ('1YD', 'Broadcom', 3, 'Sergei', '2021-11-12T15:23:48.388', 'Dadat'),
+    ('1YD', 5, 'Olga', '2021-09-10T15:23:48.388', 'Dadat'),
+    ('1YD', 3, 'Sergei', '2021-11-12T15:23:48.388', 'Dadat'),
     -- Home Depot
-    ('HDI', 'Home Depot', 9, 'Olga', '2021-09-13T15:23:48.388', 'Dadat'),
+    ('HDI', 9, 'Olga', '2021-09-13T15:23:48.388', 'Dadat'),
     -- Exxon
-    ('XONA', 'Exxon', 91, 'Olga', '2020-12-22T15:23:48.388', 'Dadat'),
+    ('XONA', 91, 'Olga', '2020-12-22T15:23:48.388', 'Dadat'),
     -- AT&T
-    ('SOBA', 'AT&T', 80, 'Olga', '2020-12-22T15:23:48.388', 'Dadat'),
-    ('SOBA', 'AT&T', 0, 'Sergei', '2018-11-09T15:23:48.388', 'Flatex'),
+    ('SOBA', 80, 'Olga', '2020-12-22T15:23:48.388', 'Dadat'),
+    ('SOBA', 0, 'Sergei', '2018-11-09T15:23:48.388', 'Flatex'),
     -- Federal Realty
-    ('WX2', 'FRIT', 37, 'Olga', '2020-12-11T15:23:48.388', 'Dadat'),
-    ('WX2', 'FRIT', 8, 'Andrei', '2020-12-11T15:23:48.388', 'Dadat'),
+    ('WX2', 37, 'Olga', '2020-12-11T15:23:48.388', 'Dadat'),
+    ('WX2', 8, 'Andrei', '2020-12-11T15:23:48.388', 'Dadat'),
     -- Pepsi
-    ('PEP', 'Pepsi', 24, 'Olga', '2020-12-28T15:23:48.388', 'Dadat'),
+    ('PEP', 24, 'Olga', '2020-12-28T15:23:48.388', 'Dadat'),
     -- Walt Disney
-    ('WDP', 'Walt Disney', 20, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
+    ('WDP', 20, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
     -- Amazon
-    ('AMZ', 'Amazon', 1, 'Sergei', '2021-08-30T15:23:48.388', 'Flatex'),
+    ('AMZ', 1, 'Sergei', '2021-08-30T15:23:48.388', 'Flatex'),
     -- Lukoil
-    ('LUK', 'Lukoil', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
+    ('LUK', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
     -- Pfizer
-    ('PFE', 'Pfizer', 44, 'Sergei', '2020-03-20T15:23:48.388', 'Flatex'),
+    ('PFE', 44, 'Sergei', '2020-03-20T15:23:48.388', 'Flatex'),
     -- Blizzard
-    ('AIY', 'Blizzard', 0, 'Sergei', '2018-11-09T15:23:48.388', 'Flatex'),
+    ('AIY', 0, 'Sergei', '2018-11-09T15:23:48.388', 'Flatex'),
     -- Boeing
-    ('BCO', 'Boeing', 0, 'Sergei', '2019-03-15T15:23:48.388', 'Flatex'),
+    ('BCO', 0, 'Sergei', '2019-03-15T15:23:48.388', 'Flatex'),
     -- Canopy Growth
-    ('11L1', 'Canopy Growth', 20, 'Sergei', '2018-11-05T15:23:48.388', 'Flatex'),
+    ('11L1', 20, 'Sergei', '2018-11-05T15:23:48.388', 'Flatex'),
     -- Teva
-    ('TEV', 'Teva', 0, 'Sergei', '2018-11-05T15:23:48.388', 'Flatex'),
+    ('TEV', 0, 'Sergei', '2018-11-05T15:23:48.388', 'Flatex'),
     -- Procter & Gamble
-    ('PRG', 'P&G', 19, 'Olga', '2021-09-17T15:23:48.388', 'Dadat'),
+    ('PRG', 19, 'Olga', '2021-09-17T15:23:48.388', 'Dadat'),
     -- AMD
-    ('AMD', 'AMD', 22, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
+    ('AMD', 22, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
     -- PayPal
-    ('2PP', 'PayPal', 8, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
+    ('2PP', 8, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
     -- TCS Group
-    ('13T1', 'Tinkoff', 20, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
+    ('13T1', 20, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
     -- EPAM
-    ('E3M', 'EPAM', 5, 'Sergei', '2021-10-04T15:23:48.388', 'Flatex'),
+    ('E3M', 5, 'Sergei', '2021-10-04T15:23:48.388', 'Flatex'),
     -- Netflix
-    ('NFC', 'Netflix', 5, 'Sergei', '2021-10-04T15:23:48.388', 'Flatex'),
+    ('NFC', 5, 'Sergei', '2021-10-04T15:23:48.388', 'Flatex'),
     -- Gold Trust
-    ('GQ9', 'Gold Trust', 13, 'Sergei', '2020-03-18T15:23:48.388', 'Flatex'),
+    ('GQ9', 13, 'Sergei', '2020-03-18T15:23:48.388', 'Flatex'),
     -- Salesforce
-    ('FOO', 'Salesforce', 5, 'Sergei', '2021-10-05T15:23:48.388', 'Flatex'),
+    ('FOO', 5, 'Sergei', '2021-10-05T15:23:48.388', 'Flatex'),
     -- NVIDIA
-    ('NVD', 'NVIDIA', 7, 'Sergei', '2021-10-05T15:23:48.388', 'Flatex'),
+    ('NVD', 7, 'Sergei', '2021-10-05T15:23:48.388', 'Flatex'),
     -- Mastercard
-    ('M4I', 'Mastercard', 6, 'Sergei', '2021-11-12T15:23:48.388', 'Flatex'),
+    ('M4I', 6, 'Sergei', '2021-11-12T15:23:48.388', 'Flatex'),
     -- Visa
-    ('3V64', 'Visa', 11, 'Sergei', '2021-11-12T15:23:48.388', 'Flatex'),
+    ('3V64', 11, 'Sergei', '2021-11-12T15:23:48.388', 'Flatex'),
     -- McDonalds
-    ('MDO', 'McDonalds', 5, 'Sergei', '2021-11-16T15:23:48.388', 'Flatex'),
+    ('MDO', 5, 'Sergei', '2021-11-16T15:23:48.388', 'Flatex'),
     -- Starbucks
-    ('SRB', 'Starbucks', 16, 'Sergei', '2021-11-18T15:23:48.388', 'Flatex'),
+    ('SRB', 16, 'Sergei', '2021-11-18T15:23:48.388', 'Flatex'),
     -- Tesla
-    ('TL0', 'Tesla', 2, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
+    ('TL0', 2, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
     -- Realty Income
-    ('RY6', 'Realty Income', 17, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
-    ('RY6', 'Realty Income', 24, 'Olga', '2021-11-08T15:23:48.388', 'Flatex'),
+    ('RY6', 17, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
+    ('RY6', 24, 'Olga', '2021-11-08T15:23:48.388', 'Flatex'),
     -- Stag
-    ('SW6', 'Stag', 28, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
-    ('SW6', 'Stag', 41, 'Olga', '2021-11-08T15:23:48.388', 'Flatex'),
+    ('SW6', 28, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
+    ('SW6', 41, 'Olga', '2021-11-08T15:23:48.388', 'Flatex'),
     -- WP Carey
-    ('WPY', 'WP Carey', 15, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
-    ('WPY', 'WP Carey', 23, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('WPY', 15, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('WPY', 23, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
     -- Easterly
-    ('E05.F', 'Easterly', 53, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
-    ('E05.F', 'Easterly', 81, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('E05.F', 53, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('E05.F', 81, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
     -- Iron Mountain
-    ('I5M', 'Iron Mountain', 24, 'Sergei', '2021-11-10T15:23:48.388', 'Dadat'),
-    ('I5M', 'Iron Mountain', 37, 'Olga', '2021-11-10T15:23:48.388', 'Dadat'),
+    ('I5M', 24, 'Sergei', '2021-11-10T15:23:48.388', 'Dadat'),
+    ('I5M', 37, 'Olga', '2021-11-10T15:23:48.388', 'Dadat'),
     -- Altria Group
-    ('PHM7', 'Altria', 70, 'Sergei', '2021-11-18T15:23:48.388', 'Dadat'),
+    ('PHM7', 70, 'Sergei', '2021-11-18T15:23:48.388', 'Dadat'),
     -- Cisco Systems
-    ('CIS', 'Cisco', 30, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
-    ('CIS', 'Cisco', 30, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('CIS', 30, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
+    ('CIS', 30, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
     -- Mondelez
-    ('KTF', 'Mondelez', 30, 'Sergei', '2021-11-12T15:23:48.388', 'Dadat'),
-    ('KTF', 'Mondelez', 30, 'Olga', '2021-11-12T15:23:48.388', 'Dadat'),
+    ('KTF', 30, 'Sergei', '2021-11-12T15:23:48.388', 'Dadat'),
+    ('KTF', 30, 'Olga', '2021-11-12T15:23:48.388', 'Dadat'),
     -- Johnson&Johnson
-    ('JNJ', 'Johnson&Johnson', 23, 'Sergei', '2022-01-18T15:23:48.388', 'Dadat'),
+    ('JNJ', 23, 'Sergei', '2022-01-18T15:23:48.388', 'Dadat'),
     -- HSBC MSCI RUSSIA
-    ('H4ZM', 'Russia ETF', 221.62, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('H4ZM', 'Russia ETF', 83.15, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('H4ZM', 221.62, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('H4ZM', 83.15, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- IShares Euro High Yield Corporate Bond
-    ('EUNW', 'Euro High Yield Corporate Bond', 9.78, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('EUNW', 'Euro High Yield Corporate Bond', 24.47, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('EUNW', 9.78, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('EUNW', 24.47, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- IShares TIPS
-    ('SXRH', 'TIPS', 544.07, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('SXRH', 'TIPS', 544.07, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('SXRH', 544.07, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('SXRH', 544.07, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Lyxor Euro government inflation-linked bonds
-    ('E15H.F', 'Euro Gov. Inflation-linked bond', 16.575, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('E15H.F', 'Euro Gov. Inflation-linked bond', 16.575, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('E15H.F', 16.575, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('E15H.F', 16.575, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Vanguard FTSE 100
-    ('VUKE', 'Great Britain stocks', 64.335, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VUKE', 'Great Britain stocks', 64.335, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VUKE', 64.335, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VUKE', 64.335, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Vanguard FTSE All-World High Dividend yield
-    ('VGWD', 'FTSE All-World High Div. Yield', 39.15, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VGWD', 'FTSE All-World High Div. Yield', 39.15, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VGWD', 39.15, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VGWD', 39.15, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Vanguard FTSE All-World Distributing
-    ('VGWL', 'FTSE All-World Dist.', 32.55, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VGWL', 'FTSE All-World Dist.', 32.55, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VGWL', 32.55, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VGWL', 32.55, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Vanguard FTSE All-World Accumulating
-    ('VWCE', 'FTSE All-World Acc.', 34.72, 'Sergei', '2020-02-18T15:23:48.388', 'Flatex'),
+    ('VWCE', 34.72, 'Sergei', '2020-02-18T15:23:48.388', 'Flatex'),
     -- Vanguard S&P 500 Accumulating
-    ('VUAA', 'S&P 500 Acc.', 35.78, 'Sergei', '2021-08-16T15:23:48.388', 'Flatex'),
+    ('VUAA', 35.78, 'Sergei', '2021-08-16T15:23:48.388', 'Flatex'),
     -- Vanguard S&P 500 Distributing
-    ('VUSA', 'S&P 500 Dist.', 77.06, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VUSA', 77.06, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
     -- Vanguard USD Corporate Bond
-    ('VUCP', 'USD Corporate Bond', 51.03, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VUCP', 'USD Corporate Bond', 51.03, 'Olga', '2021-11-15T15:23:48.388', 'Flatex')
+    ('VUCP', 51.03, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
+    ('VUCP', 51.03, 'Olga', '2021-11-15T15:23:48.388', 'Flatex')
 ;
 
 INSERT INTO transaction (symbol, argument, operator, price, owner, date)

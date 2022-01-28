@@ -4,15 +4,14 @@ import io.stock.portfolio.backend.controller.model.PortfolioResponse;
 import io.stock.portfolio.backend.controller.model.PositionResponse;
 import io.stock.portfolio.backend.database.model.DividendEntity;
 import io.stock.portfolio.backend.database.model.PositionEntity;
+import io.stock.portfolio.backend.database.model.StockEntity;
 import io.stock.portfolio.backend.database.repository.PositionRepository;
+import io.stock.portfolio.backend.database.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +19,7 @@ import java.util.stream.Collectors;
 public class PositionService {
 
     private final PositionRepository positionRepository;
+    private final StockRepository stockRepository;
     private final DividendService dividendService;
     private final TransactionService transactionService;
 
@@ -56,19 +56,21 @@ public class PositionService {
         positionRepository.save(convertToEntity(positionResponse));
     }
 
-    private PositionResponse convertToResponse(PositionEntity entity, BigDecimal investments) {
-        return convertToResponse(entity)
+    private PositionResponse convertToResponse(PositionEntity position, BigDecimal investments) {
+        return convertToResponse(position)
                 .setInvestments(investments);
     }
 
-    private PositionResponse convertToResponse(PositionEntity entity) {
+    private PositionResponse convertToResponse(PositionEntity position) {
+        var stock = stockRepository.findByEuSymbol(position.getSymbol());
         return new PositionResponse()
-                .setOwner(entity.getOwner())
-                .setSymbol(entity.getSymbol())
-                .setName(entity.getName())
-                .setStockCount(entity.getStockCount())
-                .setBuyDate(entity.getBuyDate())
-                .setBroker(entity.getBroker());
+                .setOwner(position.getOwner())
+                .setSymbol(position.getSymbol())
+                .setUsSymbol(stock.map(StockEntity::getUsSymbol).orElse(null))
+                .setName(stock.map(StockEntity::getName).orElse(null))
+                .setStockCount(position.getStockCount())
+                .setBuyDate(position.getBuyDate())
+                .setBroker(position.getBroker());
     }
 
     private PositionResponse enrichWithDividends(PositionResponse positionResponse, List<DividendEntity> dividends) {
