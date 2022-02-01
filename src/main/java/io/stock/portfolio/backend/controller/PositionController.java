@@ -19,9 +19,16 @@ public class PositionController {
 
     @GetMapping("/username/{owner}")
     @ResponseStatus(HttpStatus.OK)
-    public List<PositionResponse> getProfileByUsername(@PathVariable String owner) {
+    public List<PositionResponse> getProfileByUsername(@PathVariable String owner,
+                                                       @RequestParam(value = "sold", required = false) boolean sold,
+                                                       @RequestParam("page") int page,
+                                                       @RequestParam("pageSize") int pageSize) {
+        if (sold) {
+            return positionService.getSoldPositionsByOwner(owner, page, pageSize);
+        } else {
+            return positionService.getPositionsByOwner(owner, page, pageSize);
+        }
 
-        return positionService.getAllPositionsByOwner(owner);
     }
 
     @GetMapping()

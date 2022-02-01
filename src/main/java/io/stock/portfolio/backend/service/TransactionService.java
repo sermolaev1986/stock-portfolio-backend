@@ -128,7 +128,7 @@ public class TransactionService {
                                 .setDate(yahooSplit.getDate())
                                 .setOperator(Operator.MULTIPLY)
                                 //TODO will not work for reverse splits
-                                .setArgument(yahooSplit.getMultiplier().intValue())
+                                .setArgument(yahooSplit.getMultiplier())
                 ).collect(Collectors.toSet());
                 orderedTransactions.addAll(splitTransactions);
                 orderedTransactions.sort(Comparator.comparing(TransactionEntity::getDate));
