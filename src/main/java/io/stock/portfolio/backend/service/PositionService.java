@@ -35,12 +35,15 @@ public class PositionService {
                 .map(this::convertToResponse)
                 .collect(Collectors.groupingBy(PositionResponse::getOwner));
 
-        var investmentsPerOwner = transactionService.getInvestmentsPerOwner();
         var portfolio = new HashMap<String, PortfolioResponse>();
         for (Map.Entry<String, List<PositionResponse>> entry : positions.entrySet()) {
+            BigDecimal investmentsPerPosition = entry.getValue().stream()
+                    .map(PositionResponse::getInvestments)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
             portfolio.put(entry.getKey(), new PortfolioResponse()
                     .setPositions(entry.getValue())
-                    .setInvestments(investmentsPerOwner.get(entry.getKey()))
+                    .setInvestments(investmentsPerPosition)
             );
         }
 
@@ -68,10 +71,6 @@ public class PositionService {
                 .collect(Collectors.toList());
     }
 
-    public void postPosition(PositionResponse positionResponse) {
-        positionRepository.save(convertToEntity(positionResponse));
-    }
-
     private PositionResponse convertToResponse(PositionEntity position, BigDecimal investments) {
         return convertToResponse(position)
                 .setInvestments(investments);
@@ -86,7 +85,8 @@ public class PositionService {
                 .setName(stock.map(StockEntity::getName).orElse(null))
                 .setStockCount(position.getStockCount())
                 .setBuyDate(position.getBuyDate())
-                .setBroker(position.getBroker());
+                .setBroker(position.getBroker())
+                .setInvestments(position.getTotalInvestments());
     }
 
     private PositionResponse enrichWithDividends(PositionResponse positionResponse, List<DividendEntity> dividends) {

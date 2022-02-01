@@ -15,7 +15,7 @@ public class OnStartup {
 
     @PostConstruct
     public void updatePositions(){
+        dividendService.updateDividends(); // Should be called before update positions, because there split transaction will be saved
         transactionService.updatePositions();
-        dividendService.updateDividends();
     }
 }

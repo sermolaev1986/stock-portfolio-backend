@@ -33,6 +33,9 @@ public class PositionEntity {
     @Column(name = "broker")
     private String broker;
 
+    @Column(name = "total_invesments")
+    private BigDecimal totalInvestments;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

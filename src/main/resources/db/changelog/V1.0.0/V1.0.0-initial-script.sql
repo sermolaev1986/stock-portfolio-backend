@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS position
     stockCount NUMERIC(8,4)    NOT NULL,
     owner      VARCHAR(6) NOT NULL,
     buyDate    TIMESTAMP  NOT NULL,
-    broker     VARCHAR(8)
+    broker     VARCHAR(8),
+    total_invesments NUMERIC(8,4) NOT NULL
     );
 
 CREATE TABLE IF NOT EXISTS dividend

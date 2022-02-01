@@ -33,18 +33,6 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final YahooApiClient yahooApiClient;
 
-    public Map<String, BigDecimal> getInvestmentsPerOwner() {
-        final Map<String, List<TransactionEntity>> transactionsByOwner = transactionRepository.findAll()
-                .stream()
-                .collect(groupingBy(TransactionEntity::getOwner));
-        var map = new HashMap<String, BigDecimal>();
-        for (Map.Entry<String, List<TransactionEntity>> entry : transactionsByOwner.entrySet()) {
-            map.put(entry.getKey(), countTransactions(entry.getValue()));
-        }
-
-        return map;
-    }
-
     public Map<String, BigDecimal> getInvestmentsPerSymbol(String owner) {
         final Map<String, List<TransactionEntity>> transactionsByOwner = transactionRepository.findByOwnerOrderByDateAsc(owner).stream().collect(groupingBy(TransactionEntity::getSymbol));
         var map = new HashMap<String, BigDecimal>();
@@ -116,30 +104,16 @@ public class TransactionService {
             List<TransactionEntity> orderedTransactions = entry.getValue();
             orderedTransactions.sort(Comparator.comparing(TransactionEntity::getDate));
 
+            BigDecimal totalInvestments = countTransactions(orderedTransactions);
+
             TransactionEntity firstTransaction = orderedTransactions.get(0);
-
-            var maybeResponse = yahooApiClient.getDividendsAndSplits(entry.getKey().getSymbol(), firstTransaction.getDate());
-
-            if (maybeResponse.isPresent()) {
-                Set<TransactionEntity> splitTransactions = maybeResponse.get().getSplits().stream().map(yahooSplit ->
-                        new TransactionEntity()
-                                .setSymbol(entry.getKey().getSymbol())
-                                .setOwner(entry.getKey().getOwner())
-                                .setDate(yahooSplit.getDate())
-                                .setOperator(Operator.MULTIPLY)
-                                //TODO will not work for reverse splits
-                                .setArgument(yahooSplit.getMultiplier())
-                ).collect(Collectors.toSet());
-                orderedTransactions.addAll(splitTransactions);
-                orderedTransactions.sort(Comparator.comparing(TransactionEntity::getDate));
-            }
-
             // Position status after the first Transaction
             PositionEntity position = new PositionEntity()
                     .setOwner(firstTransaction.getOwner())
                     .setSymbol(firstTransaction.getSymbol())
                     .setStockCount(firstTransaction.getOperator().calculateAmountOfShares(BigDecimal.ZERO, firstTransaction.getArgument()))
-                    .setBuyDate(firstTransaction.getDate());
+                    .setBuyDate(firstTransaction.getDate())
+                    .setTotalInvestments(totalInvestments); // calculated before in this method, no need to update
 
             // Starting from 1 because 1st event is a first transaction which was used to create initial Position
             for (int i = 1; i < orderedTransactions.size(); i++) {

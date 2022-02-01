@@ -3,6 +3,7 @@ package io.stock.portfolio.backend.service;
 import io.stock.portfolio.backend.client.exchangerate.ExchangeRateClient;
 import io.stock.portfolio.backend.client.yahoo.YahooApiClient;
 import io.stock.portfolio.backend.client.yahoo.YahooDividend;
+import io.stock.portfolio.backend.client.yahoo.YahooDividendsAndSplits;
 import io.stock.portfolio.backend.controller.model.DividendResponse;
 import io.stock.portfolio.backend.controller.model.SymbolOwner;
 import io.stock.portfolio.backend.database.model.DividendEntity;
@@ -77,6 +78,21 @@ public class DividendService {
                 .collect(Collectors.groupingBy(DividendEntity::getSymbol));
     }
 
+    public void updateSplitTransactions(String symbol, String owner, YahooDividendsAndSplits dividendsAndSplits) {
+
+        var newSplitTransactions = dividendsAndSplits.getSplits().stream().map(yahooSplit ->
+                new TransactionEntity()
+                        .setSymbol(symbol)
+                        .setOwner(owner)
+                        .setDate(yahooSplit.getDate())
+                        .setOperator(Operator.MULTIPLY)
+                        //TODO will not work for reverse splits
+                        .setArgument(yahooSplit.getMultiplier())
+        ).collect(Collectors.toSet());
+
+        transactionRepository.saveAll(newSplitTransactions);
+    }
+
     private DividendResponse convertToResponse(DividendEntity dividendEntity) {
 
         BigDecimal dollarBruttoAmount = dividendEntity.getAmountPerShare().multiply(dividendEntity.getShareAmount());
@@ -105,23 +121,13 @@ public class DividendService {
     }
 
     private List<DividendEntity> retrieveAndSaveDividends(String symbol, String owner, LocalDateTime lastDividendDate) {
+
         var maybeResponse = yahooApiClient.getDividendsAndSplits(symbol, lastDividendDate);
         if (maybeResponse.isEmpty()) {
             return Collections.emptyList();
         }
 
-        var response = maybeResponse.get();
-        var newSplitTransactions = response.getSplits().stream().map(yahooSplit ->
-                new TransactionEntity()
-                        .setSymbol(symbol)
-                        .setOwner(owner)
-                        .setDate(yahooSplit.getDate())
-                        .setOperator(Operator.MULTIPLY)
-                        //TODO will not work for reverse splits
-                        .setArgument(yahooSplit.getMultiplier())
-        ).collect(Collectors.toSet());
-
-        transactionRepository.saveAll(newSplitTransactions);
+        updateSplitTransactions(symbol, owner, maybeResponse.get());
 
         List<YahooDividend> yahooDividendsSorted = maybeResponse.get().getDividends()
                 .stream()
