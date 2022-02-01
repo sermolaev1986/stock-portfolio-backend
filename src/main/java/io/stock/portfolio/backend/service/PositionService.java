@@ -62,7 +62,7 @@ public class PositionService {
     }
 
     private PositionResponse convertToResponse(PositionEntity position) {
-        var stock = stockRepository.findByEuSymbol(position.getSymbol());
+         var stock = stockRepository.findByEuSymbol(position.getSymbol());
         return new PositionResponse()
                 .setOwner(position.getOwner())
                 .setSymbol(position.getSymbol())

@@ -8,5 +8,6 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long> {
 
     List<TransactionEntity> findBySymbolAndOwnerOrderByDateAsc(String symbol, String owner);
-    List<TransactionEntity> findByOwnerOrderByDateAsc( String owner);
+
+    List<TransactionEntity> findByOwnerOrderByDateAsc(String owner);
 }

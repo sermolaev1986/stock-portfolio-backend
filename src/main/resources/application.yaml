@@ -1,6 +1,14 @@
+server:
+  port: 9999
 spring:
   jpa:
     open-in-view: false
+    properties:
+      hibernate:
+        generate_statistics: true
+        order_inserts: true
+        jdbc:
+          batch_size: 130
   application:
     name: stockportfolio
   datasource:

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS position
     stockCount NUMERIC(8,4)    NOT NULL,
     owner      VARCHAR(6) NOT NULL,
     buyDate    TIMESTAMP  NOT NULL,
-    broker     VARCHAR(8) NOT NULL
+    broker     VARCHAR(8)
     );
 
 CREATE TABLE IF NOT EXISTS dividend
@@ -98,138 +98,6 @@ VALUES
     ('VUCP', NULL, 'USD Corporate Bond')
 ;
 
-INSERT INTO position (symbol, stockCount, owner, buyDate, broker)
-VALUES
-    -- Apple
-    ('APC', 60, 'Sergei', '2018-11-12T15:23:48.388', 'Flatex'),
-    -- Microsoft
-    ('MSF', 19, 'Sergei', '2018-11-13T15:23:48.388', 'Flatex'),
-    -- Accenture
-    ('CSA', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
-    -- Severstal
-    ('RTS2', 227, 'Olga', '2021-01-15T15:23:48.388', 'Dadat'),
-    ('RTS2',  8, 'Andrei', '2021-08-31T15:23:48.388', 'Dadat'),
-    ('RTS2', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
---        Coca Cola
--- TODO fix non unique for the same symbol on different brokers
-    ('CCC3', 31, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
---     ('CCC3', 'Coca-Cola', 31, 'Sergei', '2021-11-10T15:23:48.388', 'Dadat'),
-    ('CCC3', 31, 'Olga', '2021-11-10T15:23:48.388', 'Dadat'),
-    -- Broadcom
-    ('1YD', 5, 'Olga', '2021-09-10T15:23:48.388', 'Dadat'),
-    ('1YD', 3, 'Sergei', '2021-11-12T15:23:48.388', 'Dadat'),
-    -- Home Depot
-    ('HDI', 9, 'Olga', '2021-09-13T15:23:48.388', 'Dadat'),
-    -- Exxon
-    ('XONA', 91, 'Olga', '2020-12-22T15:23:48.388', 'Dadat'),
-    -- AT&T
-    ('SOBA', 80, 'Olga', '2020-12-22T15:23:48.388', 'Dadat'),
-    ('SOBA', 0, 'Sergei', '2018-11-09T15:23:48.388', 'Flatex'),
-    -- Federal Realty
-    ('WX2', 37, 'Olga', '2020-12-11T15:23:48.388', 'Dadat'),
-    ('WX2', 8, 'Andrei', '2020-12-11T15:23:48.388', 'Dadat'),
-    -- Pepsi
-    ('PEP', 24, 'Olga', '2020-12-28T15:23:48.388', 'Dadat'),
-    -- Walt Disney
-    ('WDP', 20, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
-    -- Amazon
-    ('AMZ', 1, 'Sergei', '2021-08-30T15:23:48.388', 'Flatex'),
-    -- Lukoil
-    ('LUK', 0, 'Sergei', '2019-12-02T15:23:48.388', 'Flatex'),
-    -- Pfizer
-    ('PFE', 44, 'Sergei', '2020-03-20T15:23:48.388', 'Flatex'),
-    -- Blizzard
-    ('AIY', 0, 'Sergei', '2018-11-09T15:23:48.388', 'Flatex'),
-    -- Boeing
-    ('BCO', 0, 'Sergei', '2019-03-15T15:23:48.388', 'Flatex'),
-    -- Canopy Growth
-    ('11L1', 20, 'Sergei', '2018-11-05T15:23:48.388', 'Flatex'),
-    -- Teva
-    ('TEV', 0, 'Sergei', '2018-11-05T15:23:48.388', 'Flatex'),
-    -- Procter & Gamble
-    ('PRG', 19, 'Olga', '2021-09-17T15:23:48.388', 'Dadat'),
-    -- AMD
-    ('AMD', 22, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
-    -- PayPal
-    ('2PP', 8, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
-    -- TCS Group
-    ('13T1', 20, 'Sergei', '2021-09-07T15:23:48.388', 'Flatex'),
-    -- EPAM
-    ('E3M', 5, 'Sergei', '2021-10-04T15:23:48.388', 'Flatex'),
-    -- Netflix
-    ('NFC', 5, 'Sergei', '2021-10-04T15:23:48.388', 'Flatex'),
-    -- Gold Trust
-    ('GQ9', 13, 'Sergei', '2020-03-18T15:23:48.388', 'Flatex'),
-    -- Salesforce
-    ('FOO', 5, 'Sergei', '2021-10-05T15:23:48.388', 'Flatex'),
-    -- NVIDIA
-    ('NVD', 7, 'Sergei', '2021-10-05T15:23:48.388', 'Flatex'),
-    -- Mastercard
-    ('M4I', 6, 'Sergei', '2021-11-12T15:23:48.388', 'Flatex'),
-    -- Visa
-    ('3V64', 11, 'Sergei', '2021-11-12T15:23:48.388', 'Flatex'),
-    -- McDonalds
-    ('MDO', 5, 'Sergei', '2021-11-16T15:23:48.388', 'Flatex'),
-    -- Starbucks
-    ('SRB', 16, 'Sergei', '2021-11-18T15:23:48.388', 'Flatex'),
-    -- Tesla
-    ('TL0', 2, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
-    -- Realty Income
-    ('RY6', 17, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
-    ('RY6', 24, 'Olga', '2021-11-08T15:23:48.388', 'Flatex'),
-    -- Stag
-    ('SW6', 28, 'Sergei', '2021-11-08T15:23:48.388', 'Flatex'),
-    ('SW6', 41, 'Olga', '2021-11-08T15:23:48.388', 'Flatex'),
-    -- WP Carey
-    ('WPY', 15, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
-    ('WPY', 23, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
-    -- Easterly
-    ('E05.F', 53, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
-    ('E05.F', 81, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
-    -- Iron Mountain
-    ('I5M', 24, 'Sergei', '2021-11-10T15:23:48.388', 'Dadat'),
-    ('I5M', 37, 'Olga', '2021-11-10T15:23:48.388', 'Dadat'),
-    -- Altria Group
-    ('PHM7', 70, 'Sergei', '2021-11-18T15:23:48.388', 'Dadat'),
-    -- Cisco Systems
-    ('CIS', 30, 'Sergei', '2021-11-08T15:23:48.388', 'Dadat'),
-    ('CIS', 30, 'Olga', '2021-11-08T15:23:48.388', 'Dadat'),
-    -- Mondelez
-    ('KTF', 30, 'Sergei', '2021-11-12T15:23:48.388', 'Dadat'),
-    ('KTF', 30, 'Olga', '2021-11-12T15:23:48.388', 'Dadat'),
-    -- Johnson&Johnson
-    ('JNJ', 23, 'Sergei', '2022-01-18T15:23:48.388', 'Dadat'),
-    -- HSBC MSCI RUSSIA
-    ('H4ZM', 221.62, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('H4ZM', 83.15, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
-    -- IShares Euro High Yield Corporate Bond
-    ('EUNW', 9.78, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('EUNW', 24.47, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
-    -- IShares TIPS
-    ('SXRH', 544.07, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('SXRH', 544.07, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
-    -- Lyxor Euro government inflation-linked bonds
-    ('E15H.F', 16.575, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('E15H.F', 16.575, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
-    -- Vanguard FTSE 100
-    ('VUKE', 64.335, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VUKE', 64.335, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
-    -- Vanguard FTSE All-World High Dividend yield
-    ('VGWD', 39.15, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VGWD', 39.15, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
-    -- Vanguard FTSE All-World Distributing
-    ('VGWL', 32.55, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VGWL', 32.55, 'Olga', '2021-11-15T15:23:48.388', 'Flatex'),
-    -- Vanguard FTSE All-World Accumulating
-    ('VWCE', 34.72, 'Sergei', '2020-02-18T15:23:48.388', 'Flatex'),
-    -- Vanguard S&P 500 Accumulating
-    ('VUAA', 35.78, 'Sergei', '2021-08-16T15:23:48.388', 'Flatex'),
-    -- Vanguard S&P 500 Distributing
-    ('VUSA', 77.06, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    -- Vanguard USD Corporate Bond
-    ('VUCP', 51.03, 'Sergei', '2021-11-15T15:23:48.388', 'Flatex'),
-    ('VUCP', 51.03, 'Olga', '2021-11-15T15:23:48.388', 'Flatex')
-;
 
 INSERT INTO transaction (symbol, argument, operator, price, owner, date)
 VALUES

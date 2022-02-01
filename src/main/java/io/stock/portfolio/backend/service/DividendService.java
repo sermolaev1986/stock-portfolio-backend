@@ -4,6 +4,7 @@ import io.stock.portfolio.backend.client.exchangerate.ExchangeRateClient;
 import io.stock.portfolio.backend.client.yahoo.YahooApiClient;
 import io.stock.portfolio.backend.client.yahoo.YahooDividend;
 import io.stock.portfolio.backend.controller.model.DividendResponse;
+import io.stock.portfolio.backend.controller.model.SymbolOwner;
 import io.stock.portfolio.backend.database.model.DividendEntity;
 import io.stock.portfolio.backend.database.model.Operator;
 import io.stock.portfolio.backend.database.model.PositionEntity;
@@ -14,6 +15,7 @@ import io.stock.portfolio.backend.database.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -180,6 +183,23 @@ public class DividendService {
 
         return dividendEntities;
 
+    }
+
+    @Transactional
+    public void updateDividends() {
+        Map<SymbolOwner, List<TransactionEntity>> transactionsBySymbolAndOwner = transactionRepository.findAll()
+                .stream()
+                .collect(groupingBy(tr -> new SymbolOwner(tr.getSymbol(), tr.getOwner())));
+
+
+        for (Map.Entry<SymbolOwner, List<TransactionEntity>> entry : transactionsBySymbolAndOwner.entrySet()) {
+
+            List<TransactionEntity> orderedTransactions = entry.getValue();
+            orderedTransactions.sort(Comparator.comparing(TransactionEntity::getDate));
+
+            TransactionEntity firstTransaction = orderedTransactions.get(0);
+            retrieveAndSaveDividends(entry.getKey().getSymbol(), entry.getKey().getOwner(), firstTransaction.getDate());
+        }
     }
 
     @AllArgsConstructor

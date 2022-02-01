@@ -28,6 +28,8 @@ public class YahooApiClient {
 
     private final RestTemplate restTemplate;
 
+    private Map<String, YahooDividendsAndSplits> cacheDividendsAndSplit = new HashMap<>();
+
     public Optional<YahooQuote> getQuote(String symbol) {
         if (!symbol.contains(".")) {
             symbol = symbol + ".BE";
@@ -57,6 +59,10 @@ public class YahooApiClient {
     }
 
     public Optional<YahooDividendsAndSplits> getDividendsAndSplits(String symbol, LocalDateTime lastDividendDate) {
+        if (cacheDividendsAndSplit.get(symbol) != null) {
+            return Optional.of(cacheDividendsAndSplit.get(symbol));
+        }
+
         if (!symbol.contains(".")) {
             symbol = symbol + ".BE";
         }
@@ -81,9 +87,11 @@ public class YahooApiClient {
                     new HttpEntity<>(new LinkedMultiValueMap<>()),
                     Response.class);
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                return Optional.of(new YahooDividendsAndSplits()
+                 YahooDividendsAndSplits dividendsAndSplit = new YahooDividendsAndSplits()
                         .setDividends(convertToYahooDividend(Objects.requireNonNull(responseEntity.getBody())))
-                        .setSplits(convertToYahooSplit(Objects.requireNonNull(responseEntity.getBody()))));
+                        .setSplits(convertToYahooSplit(Objects.requireNonNull(responseEntity.getBody())));
+                cacheDividendsAndSplit.put(symbol, dividendsAndSplit);
+                return Optional.of(dividendsAndSplit);
             }
         } catch (HttpClientErrorException exception) {
             log.error("error getting dividends for symbol {}: ", symbol, exception);
@@ -91,6 +99,10 @@ public class YahooApiClient {
         }
 
         return Optional.empty();
+    }
+
+    public void cleanDividendsAndSplitCache() {
+        cacheDividendsAndSplit = null;
     }
 
     private List<YahooSplit> convertToYahooSplit(Response response) {
