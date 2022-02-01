@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -23,7 +24,7 @@ public class TransactionDTO {
     @NotBlank
     private String owner;
     @NotNull
-    private Integer argument;
+    private BigDecimal argument;
     @NotNull
     private Operator operator;
 
