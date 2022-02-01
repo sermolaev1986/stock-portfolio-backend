@@ -104,26 +104,37 @@ public class TransactionService {
             List<TransactionEntity> orderedTransactions = entry.getValue();
             orderedTransactions.sort(Comparator.comparing(TransactionEntity::getDate));
 
-            BigDecimal totalInvestments = countTransactions(orderedTransactions);
+            Optional<PositionEntity> maybePosition = positionRepository.findBySymbolAndOwner(entry.getKey().getSymbol(), entry.getKey().getOwner());
+            // TODO: how will it work on post new transaction
+            if (maybePosition.isPresent()) {
+                PositionEntity positionEntity = maybePosition.get();
+                updateStockCount(positionEntity, orderedTransactions, 0);
+            } else {
+                BigDecimal totalInvestments = countTransactions(orderedTransactions);
 
-            TransactionEntity firstTransaction = orderedTransactions.get(0);
-            // Position status after the first Transaction
-            PositionEntity position = new PositionEntity()
-                    .setOwner(firstTransaction.getOwner())
-                    .setSymbol(firstTransaction.getSymbol())
-                    .setStockCount(firstTransaction.getOperator().calculateAmountOfShares(BigDecimal.ZERO, firstTransaction.getArgument()))
-                    .setBuyDate(firstTransaction.getDate())
-                    .setTotalInvestments(totalInvestments); // calculated before in this method, no need to update
+                TransactionEntity firstTransaction = orderedTransactions.get(0);
+                // Position status after the first Transaction
+                PositionEntity position = new PositionEntity()
+                        .setOwner(firstTransaction.getOwner())
+                        .setSymbol(firstTransaction.getSymbol())
+                        .setStockCount(firstTransaction.getOperator().calculateAmountOfShares(BigDecimal.ZERO, firstTransaction.getArgument()))
+                        .setBuyDate(firstTransaction.getDate())
+                        .setTotalInvestments(totalInvestments); // calculated before in this method, no need to update
 
-            // Starting from 1 because 1st event is a first transaction which was used to create initial Position
-            for (int i = 1; i < orderedTransactions.size(); i++) {
-                TransactionEntity transaction = orderedTransactions.get(i);// It can be normal transaction or split transaction
-                position.setStockCount(transaction.getOperator().calculateAmountOfShares(position.getStockCount(), transaction.getArgument()));
+                // Starting from 1 because 1st event is a first transaction which was used to create initial Position
+                updateStockCount(position, orderedTransactions, 1);
+                positionsToSave.add(position);
             }
-            positionsToSave.add(position);
         }
         positionRepository.saveAll(positionsToSave);
 
+    }
+
+    private void updateStockCount(PositionEntity position, List<TransactionEntity> orderedTransactions, int start) {
+        for (int i = start; i < orderedTransactions.size(); i++) {
+            TransactionEntity transaction = orderedTransactions.get(i);// It can be normal transaction or split transaction
+            position.setStockCount(transaction.getOperator().calculateAmountOfShares(position.getStockCount(), transaction.getArgument()));
+        }
     }
 
     private TransactionDTO convertToResponse(TransactionEntity entity) {
