@@ -89,7 +89,7 @@ VALUES
     ('CHV.DE', 'CVX', 'Chevron'),
     ('BAC.F', 'VZ', 'Verizon'),
     ('ABEC.DE', 'GOOGL', 'Google'),
-    ('H4ZM', NULL, 'Russia ETF'),
+    ('H4ZM.DE', NULL, 'Russia ETF'),
     ('EUNW', NULL, 'Euro High Yield Corporate Bond'),
     ('SXRH', NULL, 'TIPS'),
     ('E15H.F', NULL, 'Euro Gov. Inflation-linked bond'),
@@ -246,11 +246,11 @@ VALUES
         ('BAC.F', 55, '+', 47.03, 'Olga', '2022-02-18T13:23:48.388'),
 
         -- HSBC MSCI Russia
-        ('H4ZM', 38.775, '+', 12.88, 'Sergei', '2021-11-15T15:23:48.388'),
-        ('H4ZM', 38.775, '+', 12.88, 'Olga', '2021-11-15T15:23:48.388'),
-        ('H4ZM', 44.375, '+', 11.25, 'Sergei', '2021-12-15T15:23:48.388'),
-        ('H4ZM', 44.375, '+', 11.25, 'Olga', '2021-12-15T15:23:48.388'),
-        ('H4ZM', 138.47, '+', 10.82, 'Sergei', '2022-01-17T15:23:48.388'),
+        ('H4ZM.DE', 38.775, '+', 12.88, 'Sergei', '2021-11-15T15:23:48.388'),
+        ('H4ZM.DE', 38.775, '+', 12.88, 'Olga', '2021-11-15T15:23:48.388'),
+        ('H4ZM.DE', 44.375, '+', 11.25, 'Sergei', '2021-12-15T15:23:48.388'),
+        ('H4ZM.DE', 44.375, '+', 11.25, 'Olga', '2021-12-15T15:23:48.388'),
+        ('H4ZM.DE', 138.47, '+', 10.82, 'Sergei', '2022-01-17T15:23:48.388'),
 
         -- IShares Euro High Yield Corporate Bond
         ('EUNW', 4.89, '+', 102.08, 'Sergei', '2021-11-15T15:23:48.388'),
