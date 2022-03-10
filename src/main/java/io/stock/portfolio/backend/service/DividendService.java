@@ -50,7 +50,7 @@ public class DividendService {
 
         if (!dividendsSortedByPaymentDate.isEmpty()) {
             LocalDateTime lastDividend = dividendsSortedByPaymentDate.get(0).getExDate();
-            if (lastDividend.plusMonths(1).isBefore(LocalDateTime.now())) {
+            if (lastDividend.plusDays(20).isBefore(LocalDateTime.now())) {
                 dividendsSortedByPaymentDate.addAll(retrieveAndSaveDividends(symbol, owner, lastDividend.plusDays(1)));
             }
         } else {
@@ -197,14 +197,24 @@ public class DividendService {
                 .stream()
                 .collect(groupingBy(tr -> new SymbolOwner(tr.getSymbol(), tr.getOwner())));
 
-
         for (Map.Entry<SymbolOwner, List<TransactionEntity>> entry : transactionsBySymbolAndOwner.entrySet()) {
+            var lastDividends = dividendRepository.findFirstBySymbolAndOwnerOrderByExDateDesc(entry.getKey().getSymbol(), entry.getKey().getOwner());
 
-            List<TransactionEntity> orderedTransactions = entry.getValue();
-            orderedTransactions.sort(Comparator.comparing(TransactionEntity::getDate));
+            LocalDateTime lastDividendDate;
 
-            TransactionEntity firstTransaction = orderedTransactions.get(0);
-            retrieveAndSaveDividends(entry.getKey().getSymbol(), entry.getKey().getOwner(), firstTransaction.getDate());
+            if (lastDividends.isPresent()) {
+                lastDividendDate = lastDividends.get().getExDate().plusDays(1); // To avoid saving the same dividend 2 times since yahoo returns dividends including start date
+            } else {
+                List<TransactionEntity> orderedTransactions = entry.getValue();
+                orderedTransactions.sort(Comparator.comparing(TransactionEntity::getDate));
+
+                TransactionEntity firstTransaction = orderedTransactions.get(0);
+                lastDividendDate = firstTransaction.getDate();
+            }
+
+            if (lastDividendDate.plusDays(20).isBefore(LocalDateTime.now())) {
+                retrieveAndSaveDividends(entry.getKey().getSymbol(), entry.getKey().getOwner(), lastDividendDate);
+            }
         }
     }
 

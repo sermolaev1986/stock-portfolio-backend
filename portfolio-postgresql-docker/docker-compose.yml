@@ -3,6 +3,7 @@ services:
   database:
     build: .
     container_name: stock-portfolio-postgres
+    image: stock-portfolio-postgres
     ports:
       - "5432:5432"
     environment:
