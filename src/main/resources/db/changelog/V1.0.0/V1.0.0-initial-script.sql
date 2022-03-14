@@ -101,7 +101,7 @@ VALUES
     ('VUSA', NULL, 'S&P 500 Dist.'),
     ('VUCP', NULL, 'USD Corporate Bond')
 ;
-
+/*
 
 INSERT INTO transaction (symbol, argument, operator, price, owner, date)
 VALUES
@@ -326,3 +326,4 @@ VALUES
         ('VUCP', 36.085, '+', 48.48, 'Sergei', '2022-01-17T15:23:48.388'),
         ('VUCP', 36.085, '+', 48.48, 'Olga', '2022-01-17T15:23:48.388')
 ;
+*/

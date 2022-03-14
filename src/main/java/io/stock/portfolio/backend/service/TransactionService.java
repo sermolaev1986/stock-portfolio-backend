@@ -75,7 +75,17 @@ public class TransactionService {
     }
 
     public List<TransactionDTO> getTransactionsByOwner(String owner) {
-        return transactionRepository.findByOwnerOrderByDateAsc(owner).stream().map(this::convertToResponse).collect(Collectors.toList());
+        return transactionRepository.findByOwnerOrderByDateAsc(owner)
+                .stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<TransactionDTO> getTransactionsBySymbolAndOwner(String symbol, String owner) {
+        return transactionRepository.findBySymbolAndOwnerOrderByDateAsc( symbol, owner)
+                .stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     @Transactional

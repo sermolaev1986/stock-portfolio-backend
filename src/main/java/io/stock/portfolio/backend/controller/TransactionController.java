@@ -23,6 +23,13 @@ public class TransactionController {
         return transactionService.getTransactionsByOwner(owner);
     }
 
+    @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public List<TransactionDTO> getTransactionsBySymbolAndOwner(@RequestParam String owner, @RequestParam String symbol) {
+
+        return transactionService.getTransactionsBySymbolAndOwner(symbol, owner);
+    }
+
     @PostMapping()
     @ResponseStatus(HttpStatus.OK)
     public void postTransaction(@RequestBody @Valid TransactionDTO transactionDTO) {

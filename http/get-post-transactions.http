@@ -1,5 +1,5 @@
 ###
-POST http://localhost:8080/v1/transactions
+POST http://localhost:9999/v1/transactions
 Content-Type: application/json
 
 {  "date": "2020-08-28T10:00:00",
@@ -11,3 +11,5 @@ Content-Type: application/json
     }
 
 ###
+
+GET http://localhost:9999/v1/transactions?symbol=H4ZM.DE&owner=Sergei
