@@ -149,10 +149,21 @@ public class TransactionService {
     }
 
     private TransactionDTO convertToResponse(TransactionEntity entity) {
-        return new TransactionDTO().setSymbol(entity.getSymbol()).setDate(entity.getDate()).setArgument(entity.getArgument()).setOperator(entity.getOperator());
+        return new TransactionDTO()
+                .setSymbol(entity.getSymbol())
+                .setDate(entity.getDate())
+                .setArgument(entity.getArgument())
+                .setOperator(entity.getOperator())
+                .setPrice(entity.getPrice());
     }
 
     private TransactionEntity convertToEntity(TransactionDTO dto) {
-        return new TransactionEntity().setSymbol(dto.getSymbol()).setDate(dto.getDate()).setArgument(dto.getArgument()).setOwner(dto.getOwner()).setOperator(dto.getOperator());
+        return new TransactionEntity()
+                .setSymbol(dto.getSymbol())
+                .setDate(dto.getDate())
+                .setArgument(dto.getArgument())
+                .setOwner(dto.getOwner())
+                .setOperator(dto.getOperator())
+                .setPrice(dto.getPrice());
     }
 }
