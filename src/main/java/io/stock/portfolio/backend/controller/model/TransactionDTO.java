@@ -28,6 +28,5 @@ public class TransactionDTO {
     @NotNull
     private Operator operator;
 
-    private Float price;
-    private String broker;
+    private BigDecimal price;
 }
