@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset ermolaevs:V1.0.0
+--changeset ermolaevs:V22.05.06
 
 INSERT INTO transaction (symbol, argument, operator, price, owner, date)
 VALUES
