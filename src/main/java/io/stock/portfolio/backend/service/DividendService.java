@@ -31,6 +31,8 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class DividendService {
 
+    private final TransactionService transactionService;
+
     private final DividendRepository dividendRepository;
     private final PositionRepository positionRepository;
     private final TransactionRepository transactionRepository;
@@ -90,7 +92,7 @@ public class DividendService {
                         .setArgument(yahooSplit.getMultiplier())
         ).collect(Collectors.toSet());
 
-        transactionRepository.saveAll(newSplitTransactions);
+        transactionService.saveOrUpdateTransactions(newSplitTransactions);
     }
 
     private DividendResponse convertToResponse(DividendEntity dividendEntity) {
@@ -126,7 +128,7 @@ public class DividendService {
         if (maybeResponse.isEmpty()) {
             return Collections.emptyList();
         }
-
+        // Update SPLIT transactions is in the same method as update dividends because of the limits on yahoo api calls
         updateSplitTransactions(symbol, owner, maybeResponse.get());
 
         List<YahooDividend> yahooDividendsSorted = maybeResponse.get().getDividends()

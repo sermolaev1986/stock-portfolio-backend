@@ -34,7 +34,7 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.OK)
     public void postTransaction(@RequestBody @Valid TransactionDTO transactionDTO) {
 
-        transactionService.saveTransactions(List.of(transactionDTO));
+        transactionService.saveTransactionsAndUpdatePositions(List.of(transactionDTO));
     }
 
 }

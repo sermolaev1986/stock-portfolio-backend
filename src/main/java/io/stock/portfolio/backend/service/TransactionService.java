@@ -1,26 +1,18 @@
 package io.stock.portfolio.backend.service;
 
 import io.stock.portfolio.backend.client.yahoo.YahooApiClient;
-import io.stock.portfolio.backend.client.yahoo.YahooDividendsAndSplits;
-import io.stock.portfolio.backend.client.yahoo.YahooSplit;
 import io.stock.portfolio.backend.controller.model.SymbolOwner;
 import io.stock.portfolio.backend.controller.model.TransactionDTO;
-import io.stock.portfolio.backend.database.model.Operator;
 import io.stock.portfolio.backend.database.model.PositionEntity;
 import io.stock.portfolio.backend.database.model.TransactionEntity;
 import io.stock.portfolio.backend.database.repository.PositionRepository;
 import io.stock.portfolio.backend.database.repository.TransactionRepository;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -82,18 +74,31 @@ public class TransactionService {
     }
 
     public List<TransactionDTO> getTransactionsBySymbolAndOwner(String symbol, String owner) {
-        return transactionRepository.findBySymbolAndOwnerOrderByDateAsc( symbol, owner)
+        return transactionRepository.findBySymbolAndOwnerOrderByDateAsc(symbol, owner)
                 .stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public void saveTransactions(List<TransactionDTO> transactionDTOs) {
+    public void saveTransactionsAndUpdatePositions(List<TransactionDTO> transactionDTOs) {
         List<TransactionEntity> transactionEntities = transactionDTOs.stream().map(this::convertToEntity).collect(Collectors.toList());
         transactionRepository.saveAll(transactionEntities);
 
         saveOrUpdatePositionsCorrespondingToTransactions(transactionEntities);
+    }
+
+    @Transactional
+    public void saveOrUpdateTransactions(Set<TransactionEntity> transactionEntities) {
+        transactionEntities.forEach(tr ->
+        {
+            Optional<TransactionEntity> maybeTrInDB = transactionRepository.findBySymbolAndOwnerAndDateAndOperatorAndArgument(
+                    tr.getSymbol(), tr.getOwner(), tr.getDate(), tr.getOperator(), tr.getArgument());
+            if (maybeTrInDB.isEmpty()) {
+                transactionRepository.save(tr);
+            }
+        });
+
     }
 
     // Only use on App startup

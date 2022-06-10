@@ -41,6 +41,8 @@ class DividendServiceTest {
     private YahooApiClient yahooApiClient;
     @Mock
     private ExchangeRateClient exchangeRateClient;
+    @Mock
+    private TransactionService transactionService;
 
     private DividendService dividendService;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -95,7 +97,7 @@ class DividendServiceTest {
         when(yahooApiClient.getDividendsAndSplits("APP", firstTransactionDate))
                 .thenReturn(Optional.of(new YahooDividendsAndSplits().setDividends(List.of(div_15_jan, div_15_jun, div_15_sep, div_15_dec))));
 
-        dividendService = new DividendService(dividendRepository, positionRepository,
+        dividendService = new DividendService(transactionService, dividendRepository, positionRepository,
                 transactionRepository, yahooApiClient, exchangeRateClient);
 
 
