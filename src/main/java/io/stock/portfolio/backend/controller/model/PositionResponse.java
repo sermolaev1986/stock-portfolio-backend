@@ -16,6 +16,7 @@ public class PositionResponse {
     private String symbol;
     private String usSymbol;
     private String name;
+    private String type;
     private BigDecimal stockCount;
     private String owner;
     private String broker;

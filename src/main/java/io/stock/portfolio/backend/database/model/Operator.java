@@ -22,9 +22,7 @@ public enum Operator {
 
         @Override
         public BigDecimal calculateTotalPrice(BigDecimal firstArg, BigDecimal secondArg) {
-            return firstArg
-                    .subtract(secondArg)
-                    .multiply(new BigDecimal("0.725"));
+            return firstArg.subtract(secondArg);
         }
     },
     MULTIPLY("*") {

@@ -83,6 +83,7 @@ public class PositionService {
                 .setSymbol(position.getSymbol())
                 .setUsSymbol(stock.map(StockEntity::getUsSymbol).orElse(null))
                 .setName(stock.map(StockEntity::getName).orElse(null))
+                .setType(stock.map(StockEntity::getType).orElse(null))
                 .setStockCount(position.getStockCount())
                 .setBuyDate(position.getBuyDate())
                 .setBroker(position.getBroker())

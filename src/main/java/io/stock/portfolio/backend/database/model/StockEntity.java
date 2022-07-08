@@ -26,4 +26,7 @@ public class StockEntity {
     @Column(name = "usSymbol")
     private String usSymbol;
 
+    @Column(name = "type")
+    private String type;
+
 }
