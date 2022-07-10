@@ -57,7 +57,8 @@ class DividendServiceTest {
 
         PositionEntity position = new PositionEntity()
                 .setOwner("Olga")
-                .setSymbol("APP")
+                //TODO
+//                .setSymbol("APP")
                 .setBuyDate(firstTransactionDate);
 
         when(positionRepository.findBySymbolAndOwner("APP", "Olga"))

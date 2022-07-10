@@ -4,6 +4,7 @@ import io.stock.portfolio.backend.controller.model.PortfolioResponse;
 import io.stock.portfolio.backend.controller.model.PositionResponse;
 import io.stock.portfolio.backend.service.PositionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,16 +20,14 @@ public class PositionController {
 
     @GetMapping("/username/{owner}")
     @ResponseStatus(HttpStatus.OK)
-    public List<PositionResponse> getProfileByUsername(@PathVariable String owner,
-                                                       @RequestParam(value = "sold", required = false) boolean sold,
-                                                       @RequestParam("page") int page,
-                                                       @RequestParam("pageSize") int pageSize) {
-        if (sold) {
-            return positionService.getSoldPositionsByOwner(owner, page, pageSize);
-        } else {
-            return positionService.getPositionsByOwner(owner, page, pageSize);
-        }
+    public List<PositionResponse> getProfileByUsername(@PathVariable String owner, Pageable pageable) {
+        return positionService.getPositionsByOwner(owner, pageable);
+    }
 
+    @GetMapping("/username/{owner}/sold")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PositionResponse> getSoldPositions(@PathVariable String owner, Pageable pageable) {
+        return positionService.getSoldPositionsByOwner(owner, pageable);
     }
 
     @GetMapping()

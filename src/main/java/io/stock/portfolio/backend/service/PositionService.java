@@ -4,11 +4,9 @@ import io.stock.portfolio.backend.controller.model.PortfolioResponse;
 import io.stock.portfolio.backend.controller.model.PositionResponse;
 import io.stock.portfolio.backend.database.model.DividendEntity;
 import io.stock.portfolio.backend.database.model.PositionEntity;
-import io.stock.portfolio.backend.database.model.StockEntity;
 import io.stock.portfolio.backend.database.repository.PositionRepository;
 import io.stock.portfolio.backend.database.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -50,14 +48,13 @@ public class PositionService {
         return portfolio;
     }
 
-    public List<PositionResponse> getPositionsByOwner(String owner, int page, int pageSize) {
+    public List<PositionResponse> getPositionsByOwner(String owner, Pageable pageable) {
         return doGetPositionsByOwner(owner,
-                () -> positionRepository.findByOwner(owner, PageRequest.of(page, pageSize)));
+                () -> positionRepository.findByOwner(owner, pageable));
     }
 
-    public List<PositionResponse> getSoldPositionsByOwner(String owner, int page, int pageSize) {
-        return doGetPositionsByOwner(owner,
-                () -> positionRepository.findByOwnerAndStockCount(owner, BigDecimal.ZERO, PageRequest.of(page, pageSize)));
+    public List<PositionResponse> getSoldPositionsByOwner(String owner, Pageable pageable) {
+        return doGetPositionsByOwner(owner, () -> positionRepository.findByOwnerAndStockCount(owner, BigDecimal.ZERO, pageable));
     }
 
     private List<PositionResponse> doGetPositionsByOwner(String owner, Supplier<List<PositionEntity>> positionSupplier) {
@@ -77,13 +74,12 @@ public class PositionService {
     }
 
     private PositionResponse convertToResponse(PositionEntity position) {
-        var stock = stockRepository.findByEuSymbol(position.getSymbol());
         return new PositionResponse()
                 .setOwner(position.getOwner())
                 .setSymbol(position.getSymbol())
-                .setUsSymbol(stock.map(StockEntity::getUsSymbol).orElse(null))
-                .setName(stock.map(StockEntity::getName).orElse(null))
-                .setType(stock.map(StockEntity::getType).orElse(null))
+                .setUsSymbol(position.getStock().getUsSymbol())
+                .setName(position.getStock().getName())
+                .setType(position.getStock().getType())
                 .setStockCount(position.getStockCount())
                 .setBuyDate(position.getBuyDate())
                 .setBroker(position.getBroker())
@@ -99,13 +95,5 @@ public class PositionService {
 
         return positionResponse;
 
-    }
-
-    private PositionEntity convertToEntity(PositionResponse positionResponse) {
-        return new PositionEntity()
-                .setOwner(positionResponse.getOwner())
-                .setSymbol(positionResponse.getSymbol())
-                .setStockCount(positionResponse.getStockCount())
-                .setBroker(positionResponse.getBroker());
     }
 }

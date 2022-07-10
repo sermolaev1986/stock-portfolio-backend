@@ -4,13 +4,13 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
+import java.io.Serializable;
 
 @Data
 @Accessors(chain = true)
 @Entity
 @Table(name = "stock")
-public class StockEntity {
+public class StockEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

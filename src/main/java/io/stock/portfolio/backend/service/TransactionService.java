@@ -1,11 +1,11 @@
 package io.stock.portfolio.backend.service;
 
-import io.stock.portfolio.backend.client.yahoo.YahooApiClient;
 import io.stock.portfolio.backend.controller.model.SymbolOwner;
 import io.stock.portfolio.backend.controller.model.TransactionDTO;
 import io.stock.portfolio.backend.database.model.PositionEntity;
 import io.stock.portfolio.backend.database.model.TransactionEntity;
 import io.stock.portfolio.backend.database.repository.PositionRepository;
+import io.stock.portfolio.backend.database.repository.StockRepository;
 import io.stock.portfolio.backend.database.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class TransactionService {
 
     private final PositionRepository positionRepository;
     private final TransactionRepository transactionRepository;
-    private final YahooApiClient yahooApiClient;
+    private final StockRepository stockRepository;
 
     public Map<String, BigDecimal> getInvestmentsPerSymbol(String owner) {
         final Map<String, List<TransactionEntity>> transactionsByOwner = transactionRepository.findByOwnerOrderByDateAsc(owner).stream().collect(groupingBy(TransactionEntity::getSymbol));
@@ -132,7 +132,7 @@ public class TransactionService {
                 // Position status after the first Transaction
                 PositionEntity position = new PositionEntity()
                         .setOwner(firstTransaction.getOwner())
-                        .setSymbol(firstTransaction.getSymbol())
+                        .setStock(stockRepository.findByEuSymbol(firstTransaction.getSymbol()).orElseThrow())
                         .setStockCount(firstTransaction.getOperator().calculateAmountOfShares(BigDecimal.ZERO, firstTransaction.getArgument()))
                         .setBuyDate(firstTransaction.getDate())
                         .setTotalInvestments(totalInvestments); // calculated before in this method, no need to update

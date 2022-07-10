@@ -13,13 +13,11 @@ import java.util.Objects;
 @Entity
 @Table(name = "position")
 public class PositionEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private Long id;
-
-    @Column(name = "symbol")
-    private String symbol;
 
     @Column(name = "stockCount")
     private BigDecimal stockCount;
@@ -36,16 +34,27 @@ public class PositionEntity {
     @Column(name = "total_invesments")
     private BigDecimal totalInvestments;
 
+    @Column(name = "symbol", insertable = false, updatable = false)
+    private String symbol;
+
+    @ManyToOne
+    @JoinColumn(name = "symbol", referencedColumnName = "euSymbol")
+    private StockEntity stock;
+
+    public String getSymbol() {
+        return stock.getEuSymbol();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PositionEntity)) return false;
         PositionEntity position = (PositionEntity) o;
-        return Objects.equals(id, position.id) && symbol.equals(position.symbol) && owner.equals(position.owner) && buyDate.equals(position.buyDate) && broker.equals(position.broker);
+        return Objects.equals(id, position.id) && getSymbol().equals(position.getSymbol()) && owner.equals(position.owner) && buyDate.equals(position.buyDate) && broker.equals(position.broker);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, symbol, owner, buyDate, broker);
+        return Objects.hash(id, getSymbol(), owner, buyDate, broker);
     }
 }

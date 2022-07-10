@@ -5,7 +5,7 @@ spring:
     open-in-view: false
     properties:
       hibernate:
-        generate_statistics: true
+        generate_statistics: false
         order_inserts: true
         jdbc:
           batch_size: 130
