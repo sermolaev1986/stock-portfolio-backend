@@ -121,7 +121,7 @@ public class TransactionService {
 
             TransactionEntity firstTransaction = orderedTransactions.get(0);
 
-            Optional<PositionEntity> maybePosition = positionRepository.findBySymbolAndOwner(entry.getKey().getSymbol(), entry.getKey().getOwner());
+            Optional<PositionEntity> maybePosition = positionRepository.findByStockEuSymbolAndOwner(entry.getKey().getSymbol(), entry.getKey().getOwner());
             // TODO: how will it work on post new transaction
             if (maybePosition.isPresent()) {
                 PositionEntity positionEntity = maybePosition.get();

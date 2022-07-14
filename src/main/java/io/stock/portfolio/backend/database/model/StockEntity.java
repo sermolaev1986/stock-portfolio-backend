@@ -2,6 +2,7 @@ package io.stock.portfolio.backend.database.model;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,6 +18,7 @@ public class StockEntity implements Serializable {
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private Long id;
 
+    @NaturalId
     @Column(name = "euSymbol")
     private String euSymbol;
 

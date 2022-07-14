@@ -2,11 +2,13 @@ package io.stock.portfolio.backend.service;
 
 import io.stock.portfolio.backend.controller.model.PortfolioResponse;
 import io.stock.portfolio.backend.controller.model.PositionResponse;
+import io.stock.portfolio.backend.controller.model.PositionsResponse;
 import io.stock.portfolio.backend.database.model.DividendEntity;
 import io.stock.portfolio.backend.database.model.PositionEntity;
 import io.stock.portfolio.backend.database.repository.PositionRepository;
-import io.stock.portfolio.backend.database.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +22,10 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PositionService {
 
     private final PositionRepository positionRepository;
-    private final StockRepository stockRepository;
     private final DividendService dividendService;
     private final TransactionService transactionService;
 
@@ -48,24 +50,39 @@ public class PositionService {
         return portfolio;
     }
 
-    public List<PositionResponse> getPositionsByOwner(String owner, Pageable pageable) {
+    public PositionsResponse getPositionsByOwner(String owner, String stockNameLike, Pageable pageable) {
         return doGetPositionsByOwner(owner,
-                () -> positionRepository.findByOwner(owner, pageable));
+                () -> {
+                    if (stockNameLike != null && !stockNameLike.isBlank()) {
+                        return positionRepository.findByOwnerAndStockNameContainingIgnoreCase(owner, stockNameLike, pageable);
+                    } else {
+                        return positionRepository.findByOwner(owner, pageable);
+                    }
+                }
+        );
     }
 
-    public List<PositionResponse> getSoldPositionsByOwner(String owner, Pageable pageable) {
+    public PositionsResponse getSoldPositionsByOwner(String owner, Pageable pageable) {
         return doGetPositionsByOwner(owner, () -> positionRepository.findByOwnerAndStockCount(owner, BigDecimal.ZERO, pageable));
     }
 
-    private List<PositionResponse> doGetPositionsByOwner(String owner, Supplier<List<PositionEntity>> positionSupplier) {
+    private PositionsResponse doGetPositionsByOwner(String owner, Supplier<Page<PositionEntity>> positionSupplier) {
+
         var dividends = dividendService.getDividendsByOwner(owner);
         var investments = transactionService.getInvestmentsPerSymbol(owner);
 
-        return positionSupplier.get()
+        log.info("--------calling repository");
+        var positionsPage = positionSupplier.get();
+        log.info("--------called repository");
+
+        var positions = positionsPage.getContent()
                 .stream()
                 .map(entity -> convertToResponse(entity, investments.get(entity.getSymbol())))
                 .map(positionResponse -> enrichWithDividends(positionResponse, dividends.get(positionResponse.getSymbol())))
                 .collect(Collectors.toList());
+        return new PositionsResponse()
+                .setTotalPositions(positionsPage.getTotalElements())
+                .setPositions(positions);
     }
 
     private PositionResponse convertToResponse(PositionEntity position, BigDecimal investments) {

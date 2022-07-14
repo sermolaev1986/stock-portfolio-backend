@@ -56,7 +56,7 @@ public class DividendService {
                 dividendsSortedByPaymentDate.addAll(retrieveAndSaveDividends(symbol, owner, lastDividend.plusDays(1)));
             }
         } else {
-            PositionEntity position = positionRepository.findBySymbolAndOwner(symbol, owner)
+            PositionEntity position = positionRepository.findByStockEuSymbolAndOwner(symbol, owner)
                     .orElseThrow(() -> new IllegalArgumentException(
                             String.format("Position not found for %s, %s", symbol, owner)));
             dividendsSortedByPaymentDate.addAll(retrieveAndSaveDividends(symbol, owner, position.getBuyDate()));

@@ -61,7 +61,7 @@ class DividendServiceTest {
 //                .setSymbol("APP")
                 .setBuyDate(firstTransactionDate);
 
-        when(positionRepository.findBySymbolAndOwner("APP", "Olga"))
+        when(positionRepository.findByStockEuSymbolAndOwner("APP", "Olga"))
                 .thenReturn(Optional.of(position));
 
         TransactionEntity buy = new TransactionEntity()

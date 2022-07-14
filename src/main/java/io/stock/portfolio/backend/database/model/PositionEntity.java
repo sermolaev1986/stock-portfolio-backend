@@ -37,7 +37,7 @@ public class PositionEntity {
     @Column(name = "symbol", insertable = false, updatable = false)
     private String symbol;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "symbol", referencedColumnName = "euSymbol")
     private StockEntity stock;
 
