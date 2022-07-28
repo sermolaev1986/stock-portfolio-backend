@@ -44,3 +44,4 @@ spring:
 
 
 api-key: ${EXCHANGE_API_KEY}
+divvydairy-api-key: ${DIVVYDAIRY_API_KEY}

@@ -1,5 +1,7 @@
 package io.stock.portfolio.backend.service;
 
+import io.stock.portfolio.backend.client.divvydairy.DivvyDairyApiClient;
+import io.stock.portfolio.backend.client.divvydairy.DivvyDairyDividend;
 import io.stock.portfolio.backend.client.exchangerate.ExchangeRateClient;
 import io.stock.portfolio.backend.client.yahoo.YahooApiClient;
 import io.stock.portfolio.backend.client.yahoo.YahooDividend;
@@ -39,6 +41,7 @@ public class DividendService {
 
     private final YahooApiClient yahooApiClient;
     private final ExchangeRateClient exchangeRateClient;
+    private final DivvyDairyApiClient divvyDairyApiClient;
 
     public List<DividendResponse> getDividendsBySymbolAndOwner(String symbol, String owner) {
         return getDividendsBySymbolAndOwner(symbol, owner, dividendRepository.findBySymbolAndOwner(symbol, owner));
@@ -218,6 +221,10 @@ public class DividendService {
                 retrieveAndSaveDividends(entry.getKey().getSymbol(), entry.getKey().getOwner(), lastDividendDate);
             }
         }
+    }
+
+    public List<DivvyDairyDividend> getUpcomingDividends() {
+        return divvyDairyApiClient.getUpcomingDividends();
     }
 
     @AllArgsConstructor

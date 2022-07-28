@@ -1,5 +1,6 @@
 package io.stock.portfolio.backend.controller;
 
+import io.stock.portfolio.backend.client.divvydairy.DivvyDairyDividend;
 import io.stock.portfolio.backend.controller.model.DividendResponse;
 import io.stock.portfolio.backend.service.DividendService;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +16,16 @@ public class DividendController {
 
     private final DividendService dividendService;
 
-    @GetMapping("")
+    @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public List<DividendResponse> getProfileByUsername(@RequestParam String symbol, @RequestParam String owner) {
 
         return dividendService.getDividendsBySymbolAndOwner(symbol, owner);
     }
 
+    @GetMapping("/upcoming")
+    @ResponseStatus(HttpStatus.OK)
+    public List<DivvyDairyDividend> getUpcomingDividends() {
+        return dividendService.getUpcomingDividends();
+    }
 }

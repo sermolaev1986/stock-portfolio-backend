@@ -1,0 +1,3 @@
+GET https://api.divvydiary.com/dividends/upcoming?currency=EUR&userId=67556
+Accept: application/json
+X-API-KEY: a310fef6-feaf-4cd2-8b86-475955036c56

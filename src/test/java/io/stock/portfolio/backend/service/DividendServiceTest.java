@@ -1,5 +1,6 @@
 package io.stock.portfolio.backend.service;
 
+import io.stock.portfolio.backend.client.divvydairy.DivvyDairyApiClient;
 import io.stock.portfolio.backend.client.exchangerate.ExchangeRateClient;
 import io.stock.portfolio.backend.client.yahoo.YahooApiClient;
 import io.stock.portfolio.backend.client.yahoo.YahooDividend;
@@ -41,6 +42,8 @@ class DividendServiceTest {
     private YahooApiClient yahooApiClient;
     @Mock
     private ExchangeRateClient exchangeRateClient;
+    @Mock
+    private DivvyDairyApiClient divvyDairyApiClient;
     @Mock
     private TransactionService transactionService;
 
@@ -99,7 +102,7 @@ class DividendServiceTest {
                 .thenReturn(Optional.of(new YahooDividendsAndSplits().setDividends(List.of(div_15_jan, div_15_jun, div_15_sep, div_15_dec))));
 
         dividendService = new DividendService(transactionService, dividendRepository, positionRepository,
-                transactionRepository, yahooApiClient, exchangeRateClient);
+                transactionRepository, yahooApiClient, exchangeRateClient, divvyDairyApiClient);
 
 
         List<DividendResponse> dividendEntities = dividendService.getDividendsBySymbolAndOwner("APP", "Olga");
