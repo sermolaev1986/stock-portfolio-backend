@@ -1,22 +1,20 @@
 package io.stock.portfolio.backend.client;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.List;
 
 @Component
@@ -26,18 +24,21 @@ public class GoogleSheetsApiClient {
     @Value("${sheets-credentials}")
     private String credentials;
 
-    private Credential authorize() throws IOException, GeneralSecurityException {
-        final GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new StringReader(credentials));
-        final List<String> scopes = List.of(SheetsScopes.SPREADSHEETS);
-        final GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(GoogleNetHttpTransport.newTrustedTransport(),
-                JacksonFactory.getDefaultInstance(), clientSecrets, scopes)
-                .setDataStoreFactory(new FileDataStoreFactory(new File("tokens")))
-                .setAccessType("offline").build();
-        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-    }
-
     private Sheets getSheetsService() throws GeneralSecurityException, IOException {
-        Credential credential = authorize();
+        var keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(credentials));
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        PrivateKey privKey = kf.generatePrivate(keySpec);
+
+        Credential credential = new GoogleCredential.Builder()
+                .setTransport(GoogleNetHttpTransport.newTrustedTransport())
+                .setJsonFactory(JacksonFactory.getDefaultInstance())
+                .setServiceAccountId("portfolio-backend-20@spheric-ray-108018.iam.gserviceaccount.com")
+                .setServiceAccountPrivateKey(privKey)
+                .setServiceAccountScopes(List.of(SheetsScopes.SPREADSHEETS_READONLY))
+                .build();
+        credential.refreshToken();
+
+
         return new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(),
                 JacksonFactory.getDefaultInstance(), credential)
                 .setApplicationName("123")
